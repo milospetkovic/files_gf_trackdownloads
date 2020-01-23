@@ -52,7 +52,8 @@ class CalendarEventForSharedFileWithExpiration
 
             try {
                 foreach ($shareRows as $elem) {
-                    $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
+                    $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
+                    var_dump('Calendar id: '.$calendarID);
                 }
                 $connection->commit();
                 var_dump('ALL OK!');
@@ -64,7 +65,7 @@ class CalendarEventForSharedFileWithExpiration
             }
         }
 
-        var_dump($shareRows);
+        //var_dump($shareRows);
 
         $stmt->closeCursor();
     }
@@ -82,7 +83,9 @@ class CalendarEventForSharedFileWithExpiration
             if (is_array($existingCalendarsForUser) && count($existingCalendarsForUser)) {
                 foreach ($existingCalendarsForUser as $ind => $arr) {
                     if ($arr['uri'] == self::CALENDAR_URI) {
-                        $this->checkedIfCalendarExistsForUser[$calendarForUser] = $calendarForUser;
+                        $this->checkedIfCalendarExistsForUser[$calendarForUser] = $arr['id'];
+
+                        var_dump('Calendar postoji '.$arr['id']);
                         return $arr['id'];
                     }
                 }
@@ -90,7 +93,9 @@ class CalendarEventForSharedFileWithExpiration
 
             // calendar doesn't exist -> create a calendar for the user
             try {
-                return $this->calDavBackend->createCalendar(self::CALENDAR_PRINCIPAL_URI_PREFIX . $calendarForUser, self::CALENDAR_URI, ['{DAV:}displayname' => $this->calendarDisplayName]);
+                $newCalendarID =  $this->calDavBackend->createCalendar(self::CALENDAR_PRINCIPAL_URI_PREFIX . $calendarForUser, self::CALENDAR_URI, ['{DAV:}displayname' => $this->calendarDisplayName]);
+                $this->checkedIfCalendarExistsForUser[$calendarForUser] = $newCalendarID;
+                return $newCalendarID;
             } catch (Exception $e) {
                 return null;
             }
