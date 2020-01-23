@@ -45,4 +45,8 @@
         </providers>
     </activity>
 
+    <background-jobs>
+        <job>OCA\FilesGFTrackDownloads\Cron\SaveSharedFileToTheCalendar</job>
+    </background-jobs>
+
 </info>
