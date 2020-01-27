@@ -24,49 +24,54 @@ class CalendarEventForSharedFileWithExpiration
     private $calendarDisplayName = 'Shared files with expiration date';
 
     /**
-     *
+     * CalendarEventForSharedFileWithExpiration constructor.
+     * @param CalDavBackend $calDavBackend
      */
     public function __construct(CalDavBackend $calDavBackend)
     {
         $this->calDavBackend = $calDavBackend;
     }
 
-
+    /**
+     * Create a calendar which will hold all events for shared files with expiration date for user (if the calendar doesn't exist)
+     * and create event(s) in the calendar
+     */
     public function creteCalendarAndEventForUser()
     {
+        // get connection with the database
         $connection = \OC::$server->getDatabaseConnection();
 
+        // get all shared files with expiration date which don't have created calendar event
         $stmt = $connection->prepare(
-            'SELECT `id`, `share_with`, `expiration` FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
+            'SELECT `id`, `share_with`, `expiration`, `file_target`
+                 FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
         );
         $stmt->execute();
 
+        // place all fetched data into the array
         $shareRows = [];
         while ($row = $stmt->fetch()) {
             $shareRows[] = $row;
         }
 
+        // itterate throw fetched share records
         if (count($shareRows)) {
 
+            // start transaction
             $connection->beginTransaction();
 
             try {
                 foreach ($shareRows as $ind => $elem) {
-                    //if ($ind == 0) { // @TODO - remove this after successful implementation
-                        $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
-                        $this->createCalendarEvent($calendarID, $elem);
-                    //}
+                    $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
+                    $this->createCalendarEvent($calendarID, $elem);
                 }
                 $connection->commit();
             } catch (\Exception $e) {
                 $connection->rollBack();
                 echo 'Exception: '.$e->getMessage();
                 echo ' DB error: '.$connection->errorInfo();
-                //var_dump('ERROR CREATING CALENDAR');
             }
         }
-
-        //var_dump($shareRows);
 
         $stmt->closeCursor();
     }
@@ -88,6 +93,7 @@ class CalendarEventForSharedFileWithExpiration
         // set end datetime of calendar event depending on date set in share expiration field
         $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($shareData['expiration']));
 
+        // populate calendar event with data
         $calData = <<<EOD
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -105,11 +111,18 @@ END:VEVENT
 END:VCALENDAR
 EOD;
 
+        // call method which executes creating calendar object
         $response = $this->calDavBackend->createCalendarObject($calendarID, $uri, $calData);
 
         return $response;
     }
 
+    /**
+     * Create a calendar for shared files which have expiration date for user (if the calendar doesn't exist, otherwise return ID of the existing calendar.
+     *
+     * @param $calendarForUser
+     * @return int|mixed|null
+     */
     public function createCalendarForUserIfCalendarNotExists($calendarForUser)
     {
         if (!array_key_exists($calendarForUser, $this->checkedIfCalendarExistsForUser)) {
@@ -122,8 +135,6 @@ EOD;
                 foreach ($existingCalendarsForUser as $ind => $arr) {
                     if ($arr['uri'] == self::CALENDAR_URI) {
                         $this->checkedIfCalendarExistsForUser[$calendarForUser] = $arr['id'];
-
-                        var_dump('Calendar postoji '.$arr['id']);
                         return $arr['id'];
                     }
                 }
@@ -137,10 +148,8 @@ EOD;
             } catch (Exception $e) {
                 return null;
             }
-        } else {
-            return $this->checkedIfCalendarExistsForUser[$calendarForUser];
         }
-
-        return null;
+        return $this->checkedIfCalendarExistsForUser[$calendarForUser];
     }
+
 }
