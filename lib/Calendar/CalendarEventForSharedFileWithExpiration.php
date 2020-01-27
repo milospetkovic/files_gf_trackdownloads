@@ -37,7 +37,7 @@ class CalendarEventForSharedFileWithExpiration
         $connection = \OC::$server->getDatabaseConnection();
 
         $stmt = $connection->prepare(
-            'SELECT `id`, `share_with` FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
+            'SELECT `id`, `share_with`, `expiration` FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
         );
         $stmt->execute();
 
@@ -51,14 +51,13 @@ class CalendarEventForSharedFileWithExpiration
             $connection->beginTransaction();
 
             try {
-                foreach ($shareRows as $elem) {
-                    $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
-
-                    $this->createCalendarEvent($calendarID, $elem);
-
+                foreach ($shareRows as $ind => $elem) {
+                    //if ($ind == 0) { // @TODO - remove this after successful implementation
+                        $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
+                        $this->createCalendarEvent($calendarID, $elem);
+                    //}
                 }
                 $connection->commit();
-                //var_dump('ALL OK!');
             } catch (\Exception $e) {
                 $connection->rollBack();
                 echo 'Exception: '.$e->getMessage();
@@ -72,35 +71,44 @@ class CalendarEventForSharedFileWithExpiration
         $stmt->closeCursor();
     }
 
-    public function createCalendarEvent($calendarID, $elem)
+    public function createCalendarEvent($calendarID, $shareData)
     {
-        $uri = UUIDUtil::getUUID();
+        // uuid for .ics
+        $uri = strtoupper(UUIDUtil::getUUID()).'.ics';
 
-        $calData = <<<'EOD'
+        // the datetime when calendar event object is created
+        $createdDateTime = date('Ymd\THis\Z');
+
+        // uuid for calendar object itself
+        $calObjectUUID = strtolower(UUIDUtil::getUUID());
+
+        // the name for calendar event
+        $eventSummary = 'The name of calendar event -v2!';
+
+        // set end datetime of calendar event depending on date set in share expiration field
+        $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($shareData['expiration']));
+
+        $calData = <<<EOD
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:ownCloud Calendar
 BEGIN:VEVENT
-CREATED;VALUE=DATE-TIME:20190910T125139Z
-UID:47d15e3ec8
-LAST-MODIFIED;VALUE=DATE-TIME:20190910T125139Z
-DTSTAMP;VALUE=DATE-TIME:20190910T125139Z
-SUMMARY:Test Event
-DTSTART;VALUE=DATE-TIME:20190912T130000Z
-DTEND;VALUE=DATE-TIME:20190912T140000Z
+CREATED;VALUE=DATE-TIME:$createdDateTime
+UID:$calObjectUUID
+LAST-MODIFIED;VALUE=DATE-TIME:$createdDateTime
+DTSTAMP;VALUE=DATE-TIME:$createdDateTime
+SUMMARY:$eventSummary
+DTSTART;VALUE=DATE-TIME:$createdDateTime
+DTEND;VALUE=DATE-TIME:$endDateTimeOfEvent
 CLASS:PUBLIC
 END:VEVENT
 END:VCALENDAR
 EOD;
 
         $response = $this->calDavBackend->createCalendarObject($calendarID, $uri, $calData);
-        var_dump($response);
-//        var_dump($response);
-//        die('stoppe');
 
+        return $response;
     }
-
-
 
     public function createCalendarForUserIfCalendarNotExists($calendarForUser)
     {
