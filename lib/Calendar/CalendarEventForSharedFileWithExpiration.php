@@ -6,6 +6,7 @@ namespace OCA\FilesGFTrackDownloads\Calendar;
 
 use OCA\DAV\CalDAV\CalDavBackend;
 use Sabre\DAV\Exception;
+use Sabre\DAV\UUIDUtil;
 
 class CalendarEventForSharedFileWithExpiration
 {
@@ -33,7 +34,6 @@ class CalendarEventForSharedFileWithExpiration
 
     public function creteCalendarAndEventForUser()
     {
-
         $connection = \OC::$server->getDatabaseConnection();
 
         $stmt = $connection->prepare(
@@ -53,15 +53,17 @@ class CalendarEventForSharedFileWithExpiration
             try {
                 foreach ($shareRows as $elem) {
                     $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
-                    var_dump('Calendar id: '.$calendarID);
+
+                    $this->createCalendarEvent($calendarID, $elem);
+
                 }
                 $connection->commit();
-                var_dump('ALL OK!');
+                //var_dump('ALL OK!');
             } catch (\Exception $e) {
                 $connection->rollBack();
                 echo 'Exception: '.$e->getMessage();
                 echo ' DB error: '.$connection->errorInfo();
-                var_dump('ERROR CREATING CALENDAR');
+                //var_dump('ERROR CREATING CALENDAR');
             }
         }
 
@@ -70,10 +72,38 @@ class CalendarEventForSharedFileWithExpiration
         $stmt->closeCursor();
     }
 
+    public function createCalendarEvent($calendarID, $elem)
+    {
+        $uri = UUIDUtil::getUUID();
+
+        $calData = <<<'EOD'
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ownCloud Calendar
+BEGIN:VEVENT
+CREATED;VALUE=DATE-TIME:20190910T125139Z
+UID:47d15e3ec8
+LAST-MODIFIED;VALUE=DATE-TIME:20190910T125139Z
+DTSTAMP;VALUE=DATE-TIME:20190910T125139Z
+SUMMARY:Test Event
+DTSTART;VALUE=DATE-TIME:20190912T130000Z
+DTEND;VALUE=DATE-TIME:20190912T140000Z
+CLASS:PUBLIC
+END:VEVENT
+END:VCALENDAR
+EOD;
+
+        $response = $this->calDavBackend->createCalendarObject($calendarID, $uri, $calData);
+        var_dump($response);
+//        var_dump($response);
+//        die('stoppe');
+
+    }
+
+
 
     public function createCalendarForUserIfCalendarNotExists($calendarForUser)
     {
-
         if (!array_key_exists($calendarForUser, $this->checkedIfCalendarExistsForUser)) {
 
             // fetch existing calendars for user

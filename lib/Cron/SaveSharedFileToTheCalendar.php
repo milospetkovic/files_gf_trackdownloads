@@ -46,9 +46,6 @@ class SaveSharedFileToTheCalendar extends TimedJob
     {
         $this->setInterval(-43200); // sets the correct interval for this timed job
 
-        //die('ulazi');
-
-        //$this->calDavBackend = $calDavBackend;
         $this->calEventForFileWithExpiration = $calEventForFileWithExpiration;
     }
 
@@ -59,8 +56,6 @@ class SaveSharedFileToTheCalendar extends TimedJob
      */
     public function run($argument)
     {
-        //die('ulazi 2');
-
         return $this->calEventForFileWithExpiration->creteCalendarAndEventForUser();
     }
 
