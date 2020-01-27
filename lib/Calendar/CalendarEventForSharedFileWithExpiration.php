@@ -5,6 +5,7 @@ namespace OCA\FilesGFTrackDownloads\Calendar;
 
 
 use OCA\DAV\CalDAV\CalDavBackend;
+use OCA\DAV\CalDAV\CalendarObject;
 use Sabre\DAV\Exception;
 use Sabre\DAV\UUIDUtil;
 
@@ -22,6 +23,10 @@ class CalendarEventForSharedFileWithExpiration
     private $checkedIfCalendarExistsForUser = [];
 
     private $calendarDisplayName = 'Shared files with expiration date';
+    /**
+     * @var \OCP\IDBConnection
+     */
+    private $connection;
 
     /**
      * CalendarEventForSharedFileWithExpiration constructor.
@@ -30,6 +35,7 @@ class CalendarEventForSharedFileWithExpiration
     public function __construct(CalDavBackend $calDavBackend)
     {
         $this->calDavBackend = $calDavBackend;
+        $this->connection = \OC::$server->getDatabaseConnection();
     }
 
     /**
@@ -38,11 +44,8 @@ class CalendarEventForSharedFileWithExpiration
      */
     public function creteCalendarAndEventForUser()
     {
-        // get connection with the database
-        $connection = \OC::$server->getDatabaseConnection();
-
         // get all shared files with expiration date which don't have created calendar event
-        $stmt = $connection->prepare(
+        $stmt = $this->connection->prepare(
             'SELECT `id`, `share_with`, `expiration`, `file_target`
                  FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
         );
@@ -58,18 +61,18 @@ class CalendarEventForSharedFileWithExpiration
         if (count($shareRows)) {
 
             // start transaction
-            $connection->beginTransaction();
+            $this->connection->beginTransaction();
 
             try {
                 foreach ($shareRows as $ind => $elem) {
                     $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
                     $this->createCalendarEvent($calendarID, $elem);
                 }
-                $connection->commit();
+                $this->connection->commit();
             } catch (\Exception $e) {
-                $connection->rollBack();
+                $this->connection->rollBack();
                 echo 'Exception: '.$e->getMessage();
-                echo ' DB error: '.$connection->errorInfo();
+                echo ' DB error: '.$this->connection->errorInfo();
             }
         }
 
@@ -111,10 +114,21 @@ END:VEVENT
 END:VCALENDAR
 EOD;
 
-        // call method which executes creating calendar object
-        $response = $this->calDavBackend->createCalendarObject($calendarID, $uri, $calData);
+        $calendarType = CalDavBackend::CALENDAR_TYPE_CALENDAR;
 
-        return $response;
+        // call method which executes creating calendar object
+        $response = $this->calDavBackend->createCalendarObject($calendarID, $uri, $calData, $calendarType);
+
+        if (strlen($response)) {
+            // fetch newly created calendar event
+            $event = $this->calDavBackend->getCalendarObject($calendarID, $uri, $calendarType);
+            if (is_array($event)) {
+                $eventID = $event['id'];
+                return $this->setCalendarEventIdToTheShareRecord($shareData['id'], $eventID);
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -150,6 +164,21 @@ EOD;
             }
         }
         return $this->checkedIfCalendarExistsForUser[$calendarForUser];
+    }
+
+    /**
+     * Set ID of created calender event to it's linked share table record
+     *
+     * @param $shareRecordID
+     * @param $calendarEventObjectID
+     * @return bool
+     */
+    public function setCalendarEventIdToTheShareRecord($shareRecordID, $calendarEventObjectID)
+    {
+        $stmt = $this->connection->prepare(
+            'UPDATE  `*PREFIX*share` SET `elb_calendar_object_id`='.$calendarEventObjectID.' WHERE `id`='.$shareRecordID
+        );
+        return $stmt->execute();
     }
 
 }
