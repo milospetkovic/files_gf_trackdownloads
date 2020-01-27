@@ -46,7 +46,7 @@ class CalendarEventForSharedFileWithExpiration
     {
         // get all shared files with expiration date which don't have created calendar event
         $stmt = $this->connection->prepare(
-            'SELECT `id`, `share_with`, `expiration`, `file_target`
+            'SELECT `id`, `share_with`, `expiration`, `file_target`, `uid_initiator`
                  FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
         );
         $stmt->execute();
@@ -84,6 +84,10 @@ class CalendarEventForSharedFileWithExpiration
         // uuid for .ics
         $uri = strtoupper(UUIDUtil::getUUID()).'.ics';
 
+        $userInitiatorForShare = $shareData['uid_initiator'];
+
+        $shareTarget = $shareData['file_target'];
+
         // the datetime when calendar event object is created
         $createdDateTime = date('Ymd\THis\Z');
 
@@ -91,7 +95,7 @@ class CalendarEventForSharedFileWithExpiration
         $calObjectUUID = strtolower(UUIDUtil::getUUID());
 
         // the name for calendar event
-        $eventSummary = 'The name of calendar event -v2!';
+        $eventSummary = "User $userInitiatorForShare shared '$shareTarget' with you.";
 
         // set end datetime of calendar event depending on date set in share expiration field
         $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($shareData['expiration']));
