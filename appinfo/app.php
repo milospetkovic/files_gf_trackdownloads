@@ -21,3 +21,25 @@
 
 $application = new \OCA\FilesGFTrackDownloads\AppInfo\Application();
 $application->register();
+
+$includes = [
+    'Files' => 'files',
+    'Files_Sharing' => 'files',
+];
+
+$eventDispatcher = \OC::$server->getEventDispatcher();
+
+$eventDispatcher->addListener(\OCP\AppFramework\Http\TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS_LOGGEDIN, function() {
+    \OCP\Util::addScript('files_gf_trackdownloads', 'script');
+});
+
+foreach ($includes as $app => $include) {
+    $eventDispatcher->addListener(
+        'OCA\\'.$app.'::loadAdditionalScripts',
+        function () use ($include) {
+            \OCP\Util::addScript('files_gf_trackdownloads', 'script');
+            \OCP\Util::addScript('files_gf_trackdownloads', $include);
+            \OCP\Util::addStyle('files_gf_trackdownloads', 'style');
+        }
+    );
+}
