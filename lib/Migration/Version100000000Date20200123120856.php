@@ -34,12 +34,18 @@ class Version100000000Date20200123120856 extends SimpleMigrationStep {
 
         if ($schema->hasTable('share')) {
             $table = $schema->getTable('share');
-            if (!$table->hasColumn('elb_calendar_object_id')) {
-                $table->addColumn('elb_calendar_object_id', 'bigint', [
+
+            $elbCalendarObjectColumn = 'elb_calendar_object_id';
+
+            if (!$table->hasColumn($elbCalendarObjectColumn)) {
+                $table->addColumn($elbCalendarObjectColumn, 'bigint', [
                     'notnull' => false,
                     'length' => 20,
-                    'default' => null
+                    'default' => null,
+                    'unsigned' => true
                 ]);
+
+                $table->addForeignKeyConstraint('oc_calendarobjects', [$elbCalendarObjectColumn], ['id'], ["onDelete" => "SET NULL"], 'frgk_calendarobjects_id');
             }
         }
 
