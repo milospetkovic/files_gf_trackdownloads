@@ -28,57 +28,46 @@
 
 (function (OCA) {
 
-    OCA.Onlyoffice = _.extend({
-        AppName: "onlyoffice",
+    OCA.FilesGFTrackDownloads = _.extend({
+        AppName: "files_gf_trackdownloads",
         context: null,
         folderUrl: null
-    }, OCA.Onlyoffice);
+    }, OCA.FilesGFTrackDownloads);
 
-    OCA.Onlyoffice.setting = {};
+    OCA.FilesGFTrackDownloads.setting = {};
 
-    OCA.Onlyoffice.GetSettings = function (callbackSettings) {
-        if (OCA.Onlyoffice.setting.formats) {
+    OCA.FilesGFTrackDownloads.GetSettings = function (callbackSettings) {
 
-            callbackSettings();
+        $.get(OC.generateUrl("apps/" + OCA.FilesGFTrackDownloads.AppName + "/ajax/settings"),
+            function onSuccess(settings) {
+                OCA.FilesGFTrackDownloads.setting = settings;
 
-        } else {
-
-            $.get(OC.generateUrl("apps/" + OCA.Onlyoffice.AppName + "/ajax/settings"),
-                function onSuccess(settings) {
-                    OCA.Onlyoffice.setting = settings;
-
-                    callbackSettings();
-                }
-            );
-
-        }
+                callbackSettings();
+            }
+        );
     };
 
-    OCA.Onlyoffice.FileList = {
+    OCA.FilesGFTrackDownloads.FileList = {
 
         attach: function (fileList) {
 
-            if (fileList.id == "trashbin") {
-                return;
-            }
-
             var register = function() {
                 fileList.fileActions.registerAction({
-                    name: "confirmfile",
-                    displayName: t(OCA.Onlyoffice.AppName, "Confirm"),
+                    name: "confirmobject",
+                    displayName: t(OCA.FilesGFTrackDownloads.AppName, "Confirm"),
                     mime: 'all',
                     permissions: OC.PERMISSION_READ,
                     iconClass: "icon-fgft-confirmation",
-                    actionHandler: OCA.Onlyoffice.FileClick
+                    actionHandler: OCA.FilesGFTrackDownloads.FileClick
                 });
             }
 
-            OCA.Onlyoffice.GetSettings(register);
+            OCA.FilesGFTrackDownloads.GetSettings(register);
         }
     };
 
     var initPage = function () {
-        OC.Plugins.register("OCA.Files.FileList", OCA.Onlyoffice.FileList);
+        OC.Plugins.register("OCA.Files.FileList", OCA.FilesGFTrackDownloads.FileList);
     };
 
     $(document).ready(initPage);
