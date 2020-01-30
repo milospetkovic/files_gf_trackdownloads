@@ -34,6 +34,29 @@
         folderUrl: null
     }, OCA.FilesGFTrackDownloads);
 
+
+    OCA.FilesGFTrackDownloads.MarkAsConfirmed = function (fileName, context) {
+
+        console.log('ime fajla koji pozivam:', fileName);
+        console.log('context koji pozivam:', context);
+
+        var dir = context.dir || context.fileList.getCurrentDirectory();
+        var isDir = context.$file.attr('data-type') === 'dir';
+        //var url = context.fileList.getDownloadUrl(fileName, dir, isDir);
+
+        console.log(dir, isDir);
+
+
+        var params = {};
+
+        var action = 'confirm';
+
+        var getResult =  OC.filePath('files_gf_trackdownloads', 'ajax', action + '.php') + '?' + OC.buildQueryString(params);
+
+        console.log('resultat izvrsenja: ', getResult);
+
+    };
+
     OCA.FilesGFTrackDownloads.setting = {};
 
     OCA.FilesGFTrackDownloads.GetSettings = function (callbackSettings) {
@@ -58,7 +81,7 @@
                     mime: 'all',
                     permissions: OC.PERMISSION_READ,
                     iconClass: "icon-fgft-confirmation",
-                    actionHandler: OCA.FilesGFTrackDownloads.FileClick
+                    actionHandler: OCA.FilesGFTrackDownloads.MarkAsConfirmed
                 });
             }
 
