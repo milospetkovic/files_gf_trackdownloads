@@ -36,8 +36,8 @@
 //$dir = \OC\Files\Filesystem::normalizePath($dir);
 
 $collectData = $_POST('data');
-echo 'biloSta';
-var_dump($collectData);
+//echo 'biloSta';
+//var_dump($collectData);
 
 $data = [];
 $data['status'] = 'success';

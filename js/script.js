@@ -59,7 +59,7 @@
         var id = 1;
         $.ajax({
             url: baseUrl,
-            type: 'POST',
+            type: 'json',
             contentType: 'application/json',
             data: JSON.stringify(note)
         }).done(function (response) {
