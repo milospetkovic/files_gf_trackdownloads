@@ -40,20 +40,51 @@
         console.log('ime fajla koji pozivam:', fileName);
         console.log('context koji pozivam:', context);
 
-        var dir = context.dir || context.fileList.getCurrentDirectory();
-        var isDir = context.$file.attr('data-type') === 'dir';
+        //var dir = context.dir || context.fileList.getCurrentDirectory();
+        //var isDir = context.$file.attr('data-type') === 'dir';
         //var url = context.fileList.getDownloadUrl(fileName, dir, isDir);
+        //console.log(dir, isDir);
 
-        console.log(dir, isDir);
 
-
-        var params = {};
+        //var params = {};
 
         var action = 'confirm';
 
-        var getResult =  OC.filePath('files_gf_trackdownloads', 'ajax', action + '.php') + '?' + OC.buildQueryString(params);
 
-        console.log('resultat izvrsenja: ', getResult);
+        var baseUrl = OC.generateUrl('/apps/files_gf_trackdownloads/ajax/confirm.php');
+        var note = {
+            title: 'New note',
+            content: 'This is the note text'
+        };
+        var id = 1;
+        $.ajax({
+            url: baseUrl,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(note)
+        }).done(function (response) {
+            console.log('uspesno', response);
+            // handle success
+        }).fail(function (response, code) {
+            console.log('fail response ', response);
+            console.log('fail code ', code);
+            // handle failure
+        });
+
+        // $.get( OC.filePath('files_gf_trackdownloads', 'ajax', action + '.php'), {}, function(result) {
+        //     console.log('Ovo je rezultat: ', result);
+        //
+        //     if (result && result.status == 'success') {
+        //         OC.dialogs.alert('SUCCESS ', t('files_gf_trackdownloads', 'SUCCESS Title'));
+        //
+        //     } else {
+        //         // show error message
+        //         //result.data.message
+        //         OC.dialogs.alert('ERROR! ', t('files_gf_trackdownloads', ' ERROR Title'));
+        //     }
+        // });
+
+
 
     };
 
