@@ -22,6 +22,7 @@
 namespace OCA\FilesGFTrackDownloads\Controller;
 
 use OCA\FilesGFTrackDownloads\Manager\FileCacheManager;
+use OCA\FilesGFTrackDownloads\Manager\ShareManager;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
@@ -38,14 +39,19 @@ class ActionController extends Controller
      * @var FileCacheManager
      */
     private $fileCacheManager;
+    /**
+     * @var ShareManager
+     */
+    private $shareManager;
 
-    public function __construct(IConfig $config,$AppName, IRequest $request, string $UserId, IL10N $l, FileCacheManager $fileCacheManager)
+    public function __construct(IConfig $config,$AppName, IRequest $request, string $UserId, IL10N $l, FileCacheManager $fileCacheManager, ShareManager $shareManager)
     {
         parent::__construct($AppName, $request);
         $this->config = $config;
         $this->UserId = $UserId;
         $this->l = $l;
         $this->fileCacheManager = $fileCacheManager;
+        $this->shareManager = $shareManager;
     }
 
     public function confirm($fileID)
@@ -60,8 +66,13 @@ class ActionController extends Controller
             $error_msg = 'File is already confirmed';
         }
 
+        // check up if file/folder is shared with user and check up expiration date
         if (!$error) {
-
+            $result = $this->shareManager->checkUpFileIDShareWithUser($fileID, $this->UserId);
+            if ($result['error']) {
+                $error++;
+                $error_msg = $result['error_msg'];
+            }
         }
 
         $response = [
