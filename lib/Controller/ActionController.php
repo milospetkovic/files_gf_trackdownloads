@@ -21,6 +21,7 @@
 
 namespace OCA\FilesGFTrackDownloads\Controller;
 
+use OCA\FilesGFTrackDownloads\Manager\FileCacheManager;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
@@ -30,29 +31,42 @@ use OCP\AppFramework\Controller;
 
 class ActionController extends Controller
 {
-
-//    private $userId;
-//
-//    public function __construct($AppName, IRequest $request, $UserId){
-//        parent::__construct($AppName, $request);
-//        $this->userId = $UserId;
-//    }
-
     private $UserId;
     private $config;
     private $l;
-    public function __construct(IConfig $config,$AppName, IRequest $request, string $UserId, IL10N $l){
+    /**
+     * @var FileCacheManager
+     */
+    private $fileCacheManager;
+
+    public function __construct(IConfig $config,$AppName, IRequest $request, string $UserId, IL10N $l, FileCacheManager $fileCacheManager)
+    {
         parent::__construct($AppName, $request);
         $this->config = $config;
         $this->UserId = $UserId;
         $this->l = $l;
-        //header("Content-type: application/json");
+        $this->fileCacheManager = $fileCacheManager;
     }
 
-    public function confirm($nameOfFile, $directory=null, $external=null, $shareOwner = null)
+    public function confirm($fileID)
     {
+        $error = 0;
+        $error_msg = '';
+
+        // check up if file is already confirmed
+        $alreadyConfirmed = $this->fileCacheManager->checkUpIfFileOrFolderIsAlreadyConfirmed($fileID);
+        if ($alreadyConfirmed) {
+            $error++;
+            $error_msg = 'File is already confirmed';
+        }
+
+        if (!$error) {
+
+        }
+
         $response = [
-            'data' => 'ovde info o podacima'
+            'error' => $error,
+            'error_msg' => $error_msg
         ];
 
         return json_encode($response);

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2020
+ * Copyright (c) 2020 Milos Petkovic <milos.petkovic@elb-solutions.com>
  *
  * This program is a free software product.
  * You can redistribute it and/or modify it under the terms of the GNU Affero General Public License
@@ -34,57 +34,54 @@
         folderUrl: null
     }, OCA.FilesGFTrackDownloads);
 
-
-    OCA.FilesGFTrackDownloads.MarkAsConfirmed = function (fileName, context) {
+    OCA.FilesGFTrackDownloads.MarkAsConfirmed = function (filename, context) {
 
         // console.log('ime fajla koji pozivam:', fileName);
-        // console.log('context koji pozivam:', context);
+        console.log('context koji pozivam:', context);
+        //console.log('get id od fajla: ', context.fileInfoModel.id);
+
+        var fileID = context.fileInfoModel.id;
+
         //var dir = context.dir || context.fileList.getCurrentDirectory();
         //var isDir = context.$file.attr('data-type') === 'dir';
         //var url = context.fileList.getDownloadUrl(fileName, dir, isDir);
         //console.log(dir, isDir);
 
         var data = {
-            nameOfFile: fileName
+            //nameOfFile: filename,
+            fileID: fileID
         };
+
+        // set table row of file/folder as busy
+        var tr = context.fileList.findFileEl(filename);
+        context.fileList.showFileBusyState(tr, true);
 
         $.ajax({
             url: OC.filePath('files_gf_trackdownloads', 'ajax','confirm.php'),
             type: 'POST',
-            //contentType: 'application/json',
             data: data,
             success: function(element) {
 
-                console.log('vracenoooo');
-                element = element.replace(/null/g, '');
-                response = JSON.parse(element);
-                if(response.code == 1){
+                // set table row of file/folder as busy
+                context.fileList.showFileBusyState(tr, false);
+
+                console.log('returned from php method..');
+
+                // parse respone to json format
+                var response = JSON.parse(element);
+
+                //console.log('response: ', response);
+
+                if (!response.error) {
                     context.fileList.reload();
-                }else{
-                    context.fileList.showFileBusyState(tr, false);
+                } else {
                     OC.dialogs.alert(
-                        t('extract', response.desc),
-                        t('extract', 'Error extracting '+filename)
+                        t('files_gf_trackdownloads', response.error_msg),
+                        t('files_gf_trackdownloads', 'Error title')
                     );
                 }
             }
         });
-
-        // $.get( OC.filePath('files_gf_trackdownloads', 'ajax', action + '.php'), {}, function(result) {
-        //     console.log('Ovo je rezultat: ', result);
-        //
-        //     if (result && result.status == 'success') {
-        //         OC.dialogs.alert('SUCCESS ', t('files_gf_trackdownloads', 'SUCCESS Title'));
-        //
-        //     } else {
-        //         // show error message
-        //         //result.data.message
-        //         OC.dialogs.alert('ERROR! ', t('files_gf_trackdownloads', ' ERROR Title'));
-        //     }
-        // });
-
-
-
     };
 
     OCA.FilesGFTrackDownloads.setting = {};
