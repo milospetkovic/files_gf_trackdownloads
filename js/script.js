@@ -37,38 +37,37 @@
 
     OCA.FilesGFTrackDownloads.MarkAsConfirmed = function (fileName, context) {
 
-        console.log('ime fajla koji pozivam:', fileName);
-        console.log('context koji pozivam:', context);
-
+        // console.log('ime fajla koji pozivam:', fileName);
+        // console.log('context koji pozivam:', context);
         //var dir = context.dir || context.fileList.getCurrentDirectory();
         //var isDir = context.$file.attr('data-type') === 'dir';
         //var url = context.fileList.getDownloadUrl(fileName, dir, isDir);
         //console.log(dir, isDir);
 
-
-        //var params = {};
-
-        var action = 'confirm';
-
-
-        var baseUrl = OC.generateUrl('/apps/files_gf_trackdownloads/ajax/confirm.php');
-        var note = {
-            title: 'New note',
-            content: 'This is the note text'
+        var data = {
+            nameOfFile: fileName
         };
-        var id = 1;
+
         $.ajax({
-            url: baseUrl,
-            type: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(note)
-        }).done(function (response) {
-            console.log('uspesno', response);
-            // handle success
-        }).fail(function (response, code) {
-            console.log('fail response ', response);
-            console.log('fail code ', code);
-            // handle failure
+            url: OC.filePath('files_gf_trackdownloads', 'ajax','confirm.php'),
+            type: 'POST',
+            //contentType: 'application/json',
+            data: data,
+            success: function(element) {
+
+                console.log('vracenoooo');
+                element = element.replace(/null/g, '');
+                response = JSON.parse(element);
+                if(response.code == 1){
+                    context.fileList.reload();
+                }else{
+                    context.fileList.showFileBusyState(tr, false);
+                    OC.dialogs.alert(
+                        t('extract', response.desc),
+                        t('extract', 'Error extracting '+filename)
+                    );
+                }
+            }
         });
 
         // $.get( OC.filePath('files_gf_trackdownloads', 'ajax', action + '.php'), {}, function(result) {
