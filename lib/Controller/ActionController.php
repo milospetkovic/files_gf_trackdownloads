@@ -23,11 +23,10 @@ namespace OCA\FilesGFTrackDownloads\Controller;
 
 use OCA\FilesGFTrackDownloads\Manager\FileCacheManager;
 use OCA\FilesGFTrackDownloads\Manager\ShareManager;
+use OCA\FilesGFTrackDownloads\Service\ActivityService;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
-use OCP\AppFramework\Http\TemplateResponse;
-use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
 
 class ActionController extends Controller
@@ -43,8 +42,18 @@ class ActionController extends Controller
      * @var ShareManager
      */
     private $shareManager;
+    /**
+     * @var ActivityService
+     */
+    private $activityService;
 
-    public function __construct(IConfig $config,$AppName, IRequest $request, string $UserId, IL10N $l, FileCacheManager $fileCacheManager, ShareManager $shareManager)
+    public function __construct(IConfig $config,$AppName,
+                                IRequest $request,
+                                string $UserId,
+                                IL10N $l,
+                                FileCacheManager $fileCacheManager,
+                                ShareManager $shareManager,
+                                ActivityService $activityService)
     {
         parent::__construct($AppName, $request);
         $this->config = $config;
@@ -52,6 +61,7 @@ class ActionController extends Controller
         $this->l = $l;
         $this->fileCacheManager = $fileCacheManager;
         $this->shareManager = $shareManager;
+        $this->activityService = $activityService;
     }
 
     public function confirm($fileID)
@@ -82,6 +92,10 @@ class ActionController extends Controller
                 $error++;
                 $error_msg = 'Error marking file as confirmed';
             }
+        }
+
+        if (!$error) {
+            $this->activityService->saveFileConfirmationToActivity();
         }
 
         $response = [
