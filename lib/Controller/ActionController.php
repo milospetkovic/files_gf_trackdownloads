@@ -68,10 +68,19 @@ class ActionController extends Controller
 
         // check up if file/folder is shared with user and check up expiration date
         if (!$error) {
-            $result = $this->shareManager->checkUpFileIDShareWithUser($fileID, $this->UserId);
+            $result = $this->shareManager->checkUpFileIDIsSharedWithUser($fileID, $this->UserId);
             if ($result['error']) {
                 $error++;
                 $error_msg = $result['error_msg'];
+            }
+        }
+
+        // mark file as confirmed
+        if (!$error) {
+            $result = $this->fileCacheManager->markFileIDAsConfirmed($fileID);
+            if (!($result > 0)) {
+                $error++;
+                $error_msg = 'Error marking file as confirmed';
             }
         }
 

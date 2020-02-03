@@ -21,6 +21,7 @@
 
 namespace OCA\FilesGFTrackDownloads\Manager;
 
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class FileCacheManager
@@ -56,6 +57,16 @@ class FileCacheManager
             }
         }
         return $ret;
+    }
+
+    public function markFileIDAsConfirmed($fileID)
+    {
+        $query = $this->connection->getQueryBuilder();
+
+        $query->update('filecache')
+            ->set('file_confirmed', $query->createNamedParameter(self::FILE_IS_CONFIRMED))
+            ->where($query->expr()->eq('fileid', $query->createNamedParameter($fileID, IQueryBuilder::PARAM_INT)));
+        return $query->execute();
     }
 
 }

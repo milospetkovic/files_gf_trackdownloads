@@ -37,7 +37,7 @@ class ShareManager
         $this->connection = $connection;
     }
 
-    public function checkUpFileIDShareWithUser($fileID, $userID)
+    public function checkUpFileIDIsSharedWithUser($fileID, $userID)
     {
         $error = 0;
         $error_msg = 0;
@@ -65,7 +65,7 @@ class ShareManager
 
                 if (!$sharedWithCurrentUser) {
                     $error++;
-                    $error_msg = 'File is not shared for confirmation';
+                    $error_msg = 'File is not shared for Your confirmation';
                 }
 
             } else {
