@@ -70,11 +70,11 @@ class ActionController extends Controller
         $error_msg = '';
 
         // check up if file is already confirmed
-//        $alreadyConfirmed = $this->fileCacheManager->checkUpIfFileOrFolderIsAlreadyConfirmed($fileID);
-//        if ($alreadyConfirmed) {
-//            $error++;
-//            $error_msg = $this->l->t('File is already confirmed');
-//        }
+        $alreadyConfirmed = $this->fileCacheManager->checkUpIfFileOrFolderIsAlreadyConfirmed($fileID);
+        if ($alreadyConfirmed) {
+            $error++;
+            $error_msg = $this->l->t('File is already confirmed');
+        }
 
         // check up if file/folder is shared with user and check up expiration date
         if (!$error) {
@@ -94,6 +94,7 @@ class ActionController extends Controller
             }
         }
 
+        // save confirmation to the activity
         if (!$error) {
             $this->activityService->saveFileConfirmationToActivity($fileID);
         }
