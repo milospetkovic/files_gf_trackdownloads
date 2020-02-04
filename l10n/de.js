@@ -1,5 +1,5 @@
 OC.L10N.register(
-    "files_downloadactivity",
+    "filesgfdownloadactivity",
     {
         "Confirm" : "Bestätigen",
         "Error" : "Fehler",
@@ -13,4 +13,5 @@ OC.L10N.register(
         "Activities for shared file downloads" : "Aktivitäten für geteilte Dateidownloads",
         "Creates activities for downloads of files that were shared with other users or a group" : "Erstellt Aktivitäten zu heruntergeladenen Dateien, die mit anderen Benutzern oder einer Gruppe geteilt wurden"
     },
-    "nplurals=2; plural=(n != 1);");
+    ""
+);

@@ -76,8 +76,8 @@
                     context.fileList.reload();
                 } else {
                     OC.dialogs.alert(
-                        t('files_gf_trackdownloads', response.error_msg),
-                        t('files_gf_trackdownloads', 'Error')
+                        t('filesgfdownloadactivity', response.error_msg),
+                        t('filesgfdownloadactivity', 'Error')
                     );
                 }
             }
@@ -101,18 +101,18 @@
 
         attach: function (fileList) {
 
-            var register = function() {
+            //var register = function() {
                 fileList.fileActions.registerAction({
                     name: "confirmobject",
-                    displayName: t(OCA.FilesGFTrackDownloads.AppName, "Confirm"),
+                    displayName: t("filesgfdownloadactivity", "Confirm"),
                     mime: 'all',
                     permissions: OC.PERMISSION_READ,
                     iconClass: "icon-fgft-confirmation",
                     actionHandler: OCA.FilesGFTrackDownloads.MarkAsConfirmed
                 });
-            }
+            //};
 
-            OCA.FilesGFTrackDownloads.GetSettings(register);
+            //OCA.FilesGFTrackDownloads.GetSettings(register);
         }
     };
 
