@@ -24,9 +24,11 @@ namespace OCA\FilesGFTrackDownloads\Service;
 
 use OCA\Activity\CurrentUser;
 use OCA\Activity\Data;
+use OCA\FilesGFTrackDownloads\Activity\Setting;
 use OCP\Activity\IManager;
 use OCP\IDBConnection;
 use OCP\ILogger;
+use OCA\FilesGFTrackDownloads\Activity\Provider;
 
 class ActivityService
 {
@@ -52,6 +54,10 @@ class ActivityService
      * @var Data
      */
     private $activityData;
+    /**
+     * @var Setting
+     */
+    private $activitySetting;
 
     /**
      * ActivityService constructor.
@@ -64,31 +70,34 @@ class ActivityService
                                 IDBConnection $connection,
                                 ILogger $logger,
                                 CurrentUser $currentUser,
-                                Data $activityData)
+                                Data $activityData,
+                                Setting $activitySetting)
     {
         $this->activityManager = $activityManager;
         $this->connection = $connection;
         $this->logger = $logger;
         $this->currentUser = $currentUser;
         $this->activityData = $activityData;
+        $this->activitySetting = $activitySetting;
     }
 
-    public function saveFileConfirmationToActivity()
+    public function saveFileConfirmationToActivity($fileID)
     {
         $event = $this->activityManager->generateEvent();
 
         $app = 'files_gf_trackdownloads';
-        $type = 'file_gf_confirmed';
+        $type = $this->activitySetting->getIdentifier();
 
         $user = $this->currentUser->getUID();
 
-        $subject = 'test';
-        $subjectParams = ['subjectParams'];
+        $subject = Provider::SUBJECT_GF_FILE_CONFIRMED;
         $objectType = 'files';
-        $fileId = 706;
-        $path = '/';
+        //$fileId = 706;
+        $fileId = $fileID;
+        //$path = '/';
+        $path = '/Nextcloud intro.mp4';
         $link = 'here link to the file';
-
+        $subjectParams = [[$fileId => $path], $this->currentUser->getUserIdentifier()];
 
         try {
             $event->setApp($app)
@@ -111,8 +120,6 @@ class ActivityService
         if (true) {
             $this->activityData->send($event);
         }
-
-
     }
 
 }
