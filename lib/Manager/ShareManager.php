@@ -23,6 +23,7 @@ namespace OCA\FilesGFTrackDownloads\Manager;
 
 
 use OCP\IDBConnection;
+use OCP\IL10N;
 
 class ShareManager
 {
@@ -31,10 +32,15 @@ class ShareManager
      * @var IDBConnection
      */
     private $connection;
+    /**
+     * @var IL10N
+     */
+    private $l;
 
-    public function __construct(IDBConnection $connection)
+    public function __construct(IDBConnection $connection, IL10N $l)
     {
         $this->connection = $connection;
+        $this->l = $l;
     }
 
     public function checkUpFileIDIsSharedWithUser($fileID, $userID)
@@ -65,16 +71,16 @@ class ShareManager
 
                 if (!$sharedWithCurrentUser) {
                     $error++;
-                    $error_msg = 'File is not shared for Your confirmation';
+                    $error_msg = $this->l->t('File is not shared for Your confirmation');
                 }
 
             } else {
                 $error++;
-                $error_msg = 'File is not shared for confirmation';
+                $error_msg = $this->l->t('File is not shared for confirmation');
             }
         } else {
             $error++;
-            $error_msg = 'Missing file ID';
+            $error_msg = $this->l->t('Missing file ID');
         }
         return [
             'error'     => $error,

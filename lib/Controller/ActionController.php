@@ -73,7 +73,7 @@ class ActionController extends Controller
         $alreadyConfirmed = $this->fileCacheManager->checkUpIfFileOrFolderIsAlreadyConfirmed($fileID);
         if ($alreadyConfirmed) {
             $error++;
-            $error_msg = 'File is already confirmed';
+            $error_msg = $this->l->t('File is already confirmed');
         }
 
         // check up if file/folder is shared with user and check up expiration date

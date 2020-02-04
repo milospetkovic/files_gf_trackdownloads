@@ -11,7 +11,10 @@ OC.L10N.register(
         "Shared file {file} was downloaded by {actor} via the browser" : "Geteilte2 Datei {file} wurde von {actor} mit dem Browser heruntergeladen",
         "A local shared file or folder was <strong>downloaded</strong>" : "Eine lokal geteilte Datei oder Ordner wurde <strong>heruntergeladen</strong>",
         "Activities for shared file downloads" : "Aktivitäten für geteilte Dateidownloads",
-        "Creates activities for downloads of files that were shared with other users or a group" : "Erstellt Aktivitäten zu heruntergeladenen Dateien, die mit anderen Benutzern oder einer Gruppe geteilt wurden"
+        "Creates activities for downloads of files that were shared with other users or a group" : "Erstellt Aktivitäten zu heruntergeladenen Dateien, die mit anderen Benutzern oder einer Gruppe geteilt wurden",
+        "File is not shared for Your confirmation" : "Die Datei wird nicht für Ihre Bestätigung freigegeben",
+        "File is not shared for confirmation" : "Die Datei wird nicht zur Bestätigung freigegeben",
+        "File is already confirmed": "Datei ist bereits bestätigt"
     },
     ""
 );
