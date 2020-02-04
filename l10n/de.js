@@ -14,7 +14,8 @@ OC.L10N.register(
         "Creates activities for downloads of files that were shared with other users or a group" : "Erstellt Aktivitäten zu heruntergeladenen Dateien, die mit anderen Benutzern oder einer Gruppe geteilt wurden",
         "File is not shared for Your confirmation" : "Die Datei wird nicht für Ihre Bestätigung freigegeben",
         "File is not shared for confirmation" : "Die Datei wird nicht zur Bestätigung freigegeben",
-        "File is already confirmed": "Datei ist bereits bestätigt"
+        "File is already confirmed": "Datei ist bereits bestätigt",
+        "Error marking file as confirmed": "Fehler beim Markieren der Datei als bestätigt",
     },
     ""
 );

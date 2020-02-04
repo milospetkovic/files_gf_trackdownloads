@@ -90,7 +90,7 @@ class ActionController extends Controller
             $result = $this->fileCacheManager->markFileIDAsConfirmed($fileID);
             if (!($result > 0)) {
                 $error++;
-                $error_msg = 'Error marking file as confirmed';
+                $error_msg = $this->l->t('Error marking file as confirmed');
             }
         }
 
