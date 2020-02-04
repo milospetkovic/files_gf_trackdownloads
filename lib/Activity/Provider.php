@@ -119,11 +119,11 @@ class Provider implements IProvider {
         $params = $event->getSubjectParameters();
 
         if ($params[2] === 'desktop') {
-            $subject = $this->l->t('Downloaded by {actor} (via desktop)');
+            $subject = $this->l->t('Confirmed by {actor} (via desktop)');
         } else if ($params[2] === 'mobile') {
-            $subject = $this->l->t('Downloaded by {actor} (via app)');
+            $subject = $this->l->t('Confirmed by {actor} (via app)');
         } else {
-            $subject = $this->l->t('Downloaded by {actor} (via browser)');
+            $subject = $this->l->t('Confirmed by {actor} (via browser)');
         }
 
         $this->setSubjects($event, $subject, $parsedParameters);
@@ -148,11 +148,11 @@ class Provider implements IProvider {
         $params = $event->getSubjectParameters();
 
         if ($params[2] === 'desktop') {
-            $subject = $this->l->t('Shared file {file} was downloaded by {actor} via the desktop client');
+            $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the desktop client');
         } else if ($params[2] === 'mobile') {
-            $subject = $this->l->t('Shared file {file} was downloaded by {actor} via the mobile app');
+            $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the mobile app');
         } else {
-            $subject = $this->l->t('Shared file {file} was downloaded by {actor} via the browser');
+            $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the browser');
         }
 
         $this->setSubjects($event, $subject, $parsedParameters);
