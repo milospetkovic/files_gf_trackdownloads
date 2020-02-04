@@ -43,6 +43,7 @@ class Setting implements ISetting {
      */
     public function getIdentifier() {
         return 'file_gf_downloaded';
+        //return 'file_gf_confirmed';
     }
 
     /**

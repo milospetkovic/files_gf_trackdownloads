@@ -59,6 +59,7 @@ class Provider implements IProvider {
 
     const SUBJECT_SHARED_GF_FILE_DOWNLOADED = 'shared_gf_file_downloaded';
     const SUBJECT_SHARED_GF_FOLDER_DOWNLOADED = 'shared_gf_folder_downloaded';
+    const SUBJECT_GF_FILE_CONFIRMED = 'file_gf_confirmed';
 
     /**
      * @param IFactory $languageFactory
@@ -197,6 +198,12 @@ class Provider implements IProvider {
         switch ($subject) {
             case self::SUBJECT_SHARED_GF_FOLDER_DOWNLOADED:
             case self::SUBJECT_SHARED_GF_FILE_DOWNLOADED:
+                $id = key($parameters[0]);
+                return [
+                    'file' => $this->generateFileParameter($id, $parameters[0][$id]),
+                    'actor' => $this->generateUserParameter($parameters[1]),
+                ];
+            case self::SUBJECT_GF_FILE_CONFIRMED:
                 $id = key($parameters[0]);
                 return [
                     'file' => $this->generateFileParameter($id, $parameters[0][$id]),

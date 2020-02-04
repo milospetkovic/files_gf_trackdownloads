@@ -77,7 +77,7 @@
                 } else {
                     OC.dialogs.alert(
                         t('files_gf_trackdownloads', response.error_msg),
-                        t('files_gf_trackdownloads', 'Error title')
+                        t('files_gf_trackdownloads', 'Error')
                     );
                 }
             }
