@@ -153,7 +153,6 @@ class Listener {
                 ];
             }
 
-
             $timeStamp = time();
 
             if (is_array($assignedGroups) && count($assignedGroups)) {
@@ -174,7 +173,7 @@ class Listener {
                                 $event->setApp('files_gf_trackdownloads')
                                     ->setType('file_gf_downloaded')
                                     ->setAffectedUser($user->getUID())
-                                    ->setAuthor($this->currentUser->getUID())
+                                    //->setAuthor($this->currentUser->getUID())
                                     ->setTimestamp($timeStamp)
                                     ->setSubject($subject, $subjectParams)
                                     ->setObject('files', $fileId, $filePath)
@@ -194,8 +193,6 @@ class Listener {
                 }
             }
         }
-
-        //$pathDebug = '/GroupFolder1/FolderLevel1InGroupFolder1/FolderLever1.1InGroupFolder1/About(1).odt';
     }
 
     /**

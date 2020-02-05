@@ -22,6 +22,7 @@
 namespace OCA\FilesGFTrackDownloads\Service;
 
 
+use OC\Files\View;
 use OCA\Activity\CurrentUser;
 use OCA\Activity\Data;
 use OCA\FilesGFTrackDownloads\Activity\Setting;
@@ -29,6 +30,7 @@ use OCP\Activity\IManager;
 use OCP\IDBConnection;
 use OCP\ILogger;
 use OCA\FilesGFTrackDownloads\Activity\Provider;
+use OC\Files\Filesystem;
 
 class ActivityService
 {
@@ -58,6 +60,10 @@ class ActivityService
      * @var Setting
      */
     private $activitySetting;
+    /**
+     * @var View
+     */
+    private $view;
 
     /**
      * ActivityService constructor.
@@ -71,7 +77,8 @@ class ActivityService
                                 ILogger $logger,
                                 CurrentUser $currentUser,
                                 Data $activityData,
-                                Setting $activitySetting)
+                                Setting $activitySetting,
+                                View $view)
     {
         $this->activityManager = $activityManager;
         $this->connection = $connection;
@@ -79,6 +86,7 @@ class ActivityService
         $this->currentUser = $currentUser;
         $this->activityData = $activityData;
         $this->activitySetting = $activitySetting;
+        $this->view = $view;
     }
 
     public function saveFileConfirmationToActivity($fileID)
@@ -92,10 +100,10 @@ class ActivityService
 
         $subject = Provider::SUBJECT_GF_FILE_CONFIRMED;
         $objectType = 'files';
-        //$fileId = 706;
         $fileId = $fileID;
-        //$path = '/';
-        $path = '/Nextcloud intro.mp4';
+        $path = Filesystem::getPath($fileID);
+        //$info = Filesystem::getFileInfo($path);
+
         $link = 'here link to the file';
         $subjectParams = [[$fileId => $path], $this->currentUser->getUserIdentifier()];
 
@@ -118,7 +126,7 @@ class ActivityService
 
         // Add activity to stream
         if (true) {
-            $this->activityData->send($event);
+            $res = $this->activityData->send($event);
         }
     }
 
