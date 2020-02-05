@@ -64,6 +64,12 @@ class ActionController extends Controller
         $this->activityService = $activityService;
     }
 
+    /**
+     * @NoAdminRequired
+     *
+     * @param $fileID
+     * @return false|string
+     */
     public function confirm($fileID)
     {
         $error = 0;
