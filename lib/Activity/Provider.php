@@ -143,17 +143,13 @@ class Provider implements IProvider {
      * @throws \InvalidArgumentException
      * @since 11.0.0
      */
-    public function parseLongVersion(IEvent $event, IEvent $previousEvent = null) {
+    public function parseLongVersion(IEvent $event, IEvent $previousEvent = null)
+    {
         $parsedParameters = $this->getParsedParameters($event);
+
         $params = $event->getSubjectParameters();
 
-        if ($params[2] === 'desktop') {
-            $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the desktop client');
-        } else if ($params[2] === 'mobile') {
-            $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the mobile app');
-        } else {
-            $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the browser');
-        }
+        $subject = $this->getTranslatedStringBySubjectOfEvent($event->getSubject(), $params[2]);
 
         $this->setSubjects($event, $subject, $parsedParameters);
 
@@ -168,6 +164,42 @@ class Provider implements IProvider {
         }
 
         return $event;
+    }
+
+    private function getTranslatedStringBySubjectOfEvent($activitySubject, $device=null)
+    {
+        switch ($activitySubject) {
+            case self::SUBJECT_SHARED_GF_FILE_DOWNLOADED:
+                if ($device === 'desktop') {
+                    $subject = $this->l->t('Shared file {file} was downloaded by {actor} via the desktop client');
+                } else if ($device === 'mobile') {
+                    $subject = $this->l->t('Shared file {file} was downloaded by {actor} via the mobile app');
+                } else {
+                    $subject = $this->l->t('Shared file {file} was downloaded by {actor} via the browser');
+                }
+                break;
+            case self::SUBJECT_SHARED_GF_FOLDER_DOWNLOADED:
+                if ($device === 'desktop') {
+                    $subject = $this->l->t('Shared folder {file} was downloaded by {actor} via the desktop client');
+                } else if ($device === 'mobile') {
+                    $subject = $this->l->t('Shared folder {file} was downloaded by {actor} via the mobile app');
+                } else {
+                    $subject = $this->l->t('Shared folder {file} was downloaded by {actor} via the browser');
+                }
+                break;
+            case self::SUBJECT_GF_FILE_CONFIRMED:
+                if ($device === 'desktop') {
+                    $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the desktop client');
+                } else if ($device === 'mobile') {
+                    $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the mobile app');
+                } else {
+                    $subject = $this->l->t('Shared file {file} was confirmed by {actor} via the browser');
+                }
+                break;
+            default:
+                $subject = '';
+        }
+        return $subject;
     }
 
     /**

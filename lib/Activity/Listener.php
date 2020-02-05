@@ -171,7 +171,7 @@ class Listener {
                             try {
                                 $event = $this->activityManager->generateEvent();
                                 $event->setApp('files_gf_trackdownloads')
-                                    ->setType('file_gf_downloaded')
+                                    ->setType('file_gf')
                                     ->setAffectedUser($user->getUID())
                                     //->setAuthor($this->currentUser->getUID())
                                     ->setTimestamp($timeStamp)

@@ -104,7 +104,7 @@ class ActivityService
         $path = Filesystem::getPath($fileID);
         //$info = Filesystem::getFileInfo($path);
 
-        $link = 'here link to the file';
+        $link = ''; // here link to the file
         $subjectParams = [[$fileId => $path], $this->currentUser->getUserIdentifier()];
 
         try {
