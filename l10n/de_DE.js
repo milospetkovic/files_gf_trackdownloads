@@ -11,7 +11,9 @@ OC.L10N.register(
         "Shared file {file} was downloaded by {actor} via the browser" : "Geteilte2 Datei {file} wurde von {actor} mit dem Browser heruntergeladen",
         "A local shared file or folder was <strong>downloaded</strong>" : "Eine lokal geteilte Datei oder Ordner wurde <strong>heruntergeladen</strong>",
         "Activities for shared file downloads" : "Aktivitäten für geteilte Dateidownloads",
-        "Creates activities for downloads of files that were shared with other users or a group" : "Erstellt Aktivitäten zu heruntergeladenen Dateien, die mit anderen Benutzern oder einer Gruppe geteilt wurden"
+        "Creates activities for downloads of files that were shared with other users or a group" : "Erstellt Aktivitäten zu heruntergeladenen Dateien, die mit anderen Benutzern oder einer Gruppe geteilt wurden",
+        "User {user} shared {file} with you": "Benutzer {user} geteilt {file} mit dir",
+        "Shared files with expiration date": "Freigegebene Dateien mit Ablaufdatum"
     },
     ""
 );

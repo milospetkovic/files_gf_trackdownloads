@@ -22,6 +22,8 @@ OC.L10N.register(
         "File is not shared for confirmation" : "Die Datei wird nicht zur Bestätigung freigegeben",
         "File is already confirmed": "Datei ist bereits bestätigt",
         "Error marking file as confirmed": "Fehler beim Markieren der Datei als bestätigt",
+        "User {user} shared {file} with you": "Benutzer {user} geteilt {file} mit dir",
+        "Shared files with expiration date": "Freigegebene Dateien mit Ablaufdatum"
     },
     ""
 );

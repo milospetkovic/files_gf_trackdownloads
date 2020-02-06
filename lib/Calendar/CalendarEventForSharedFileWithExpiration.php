@@ -6,6 +6,8 @@ namespace OCA\FilesGFTrackDownloads\Calendar;
 
 use OCA\DAV\CalDAV\CalDavBackend;
 use OCA\DAV\CalDAV\CalendarObject;
+use OCP\Activity\IEvent;
+use OCP\IL10N;
 use Sabre\DAV\Exception;
 use Sabre\DAV\UUIDUtil;
 
@@ -27,15 +29,25 @@ class CalendarEventForSharedFileWithExpiration
      * @var \OCP\IDBConnection
      */
     private $connection;
+    /**
+     * @var IL10N
+     */
+    private $l;
 
     /**
      * CalendarEventForSharedFileWithExpiration constructor.
      * @param CalDavBackend $calDavBackend
      */
-    public function __construct(CalDavBackend $calDavBackend)
+    public function __construct(CalDavBackend $calDavBackend, IL10N $l)
     {
         $this->calDavBackend = $calDavBackend;
         $this->connection = \OC::$server->getDatabaseConnection();
+        $this->l = $l;
+    }
+
+    private function getCalendarDisplayName()
+    {
+        return $this->l->t($this->calendarDisplayName);
     }
 
     /**
@@ -79,6 +91,16 @@ class CalendarEventForSharedFileWithExpiration
         $stmt->closeCursor();
     }
 
+
+
+    private function translateSharedFileCalenderEvent($subject, array $parameters)
+    {
+        foreach ($parameters as $paramKey => $paramVal) {
+            $subject = str_replace('{'.$paramKey.'}', $paramVal, $subject);
+        }
+        return $subject;
+    }
+
     public function createCalendarEvent($calendarID, $shareData)
     {
         // uuid for .ics
@@ -86,7 +108,7 @@ class CalendarEventForSharedFileWithExpiration
 
         $userInitiatorForShare = $shareData['uid_initiator'];
 
-        $shareTarget = $shareData['file_target'];
+        $shareTarget = trim($shareData['file_target'], '/');
 
         // the datetime when calendar event object is created
         $createdDateTime = date('Ymd\THis\Z');
@@ -95,26 +117,49 @@ class CalendarEventForSharedFileWithExpiration
         $calObjectUUID = strtolower(UUIDUtil::getUUID());
 
         // the name for calendar event
-        $eventSummary = "User $userInitiatorForShare shared '$shareTarget' with you.";
+        $eventSummaryRaw = $this->l->t("User {user} shared {file} with you");
+        $eventSummary = $this->translateSharedFileCalenderEvent($eventSummaryRaw, ['user' => $userInitiatorForShare, 'file' => $shareTarget]);
 
         // set end datetime of calendar event depending on date set in share expiration field
         $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($shareData['expiration']));
 
+        $timeZone = 'Europe/Belgrade';
+
         // populate calendar event with data
         $calData = <<<EOD
 BEGIN:VCALENDAR
+PRODID:-//IDN nextcloud.com//Calendar app 2.0.1//EN
+CALSCALE:GREGORIAN
 VERSION:2.0
-PRODID:ownCloud Calendar
 BEGIN:VEVENT
-CREATED;VALUE=DATE-TIME:$createdDateTime
+CREATED:$createdDateTime
+DTSTAMP:$createdDateTime
+LAST-MODIFIED:$createdDateTime
+SEQUENCE:2
 UID:$calObjectUUID
+DTSTART;TZID=$timeZone:$createdDateTime
+DTEND;TZID=$timeZone:$endDateTimeOfEvent
 LAST-MODIFIED;VALUE=DATE-TIME:$createdDateTime
 DTSTAMP;VALUE=DATE-TIME:$createdDateTime
 SUMMARY:$eventSummary
-DTSTART;VALUE=DATE-TIME:$createdDateTime
-DTEND;VALUE=DATE-TIME:$endDateTimeOfEvent
-CLASS:PUBLIC
 END:VEVENT
+BEGIN:VTIMEZONE
+TZID:$timeZone
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
 END:VCALENDAR
 EOD;
 
@@ -160,7 +205,7 @@ EOD;
 
             // calendar doesn't exist -> create a calendar for the user
             try {
-                $newCalendarID =  $this->calDavBackend->createCalendar(self::CALENDAR_PRINCIPAL_URI_PREFIX . $calendarForUser, self::CALENDAR_URI, ['{DAV:}displayname' => $this->calendarDisplayName]);
+                $newCalendarID =  $this->calDavBackend->createCalendar(self::CALENDAR_PRINCIPAL_URI_PREFIX . $calendarForUser, self::CALENDAR_URI, ['{DAV:}displayname' => $this->getCalendarDisplayName()]);
                 $this->checkedIfCalendarExistsForUser[$calendarForUser] = $newCalendarID;
                 return $newCalendarID;
             } catch (Exception $e) {
