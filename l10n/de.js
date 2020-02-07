@@ -23,7 +23,8 @@ OC.L10N.register(
         "File is already confirmed": "Datei ist bereits bestätigt",
         "Error marking file as confirmed": "Fehler beim Markieren der Datei als bestätigt",
         "User {user} shared {file} with you": "Benutzer {user} geteilt {file} mit dir",
-        "Shared files with expiration date": "Freigegebene Dateien mit Ablaufdatum"
+        "Shared files with expiration date": "Freigegebene Dateien mit Ablaufdatum",
+        "Unconfirmed files": "Nicht bestätigte Dateien"
     },
     ""
 );

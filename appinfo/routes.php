@@ -9,10 +9,7 @@
  */
 return [
     'routes' => [
-        [
-            'name' => 'action#confirm',
-            'url' => 'ajax/confirm.php',
-            'verb' => 'POST'
-        ]
+        [ 'name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+        [ 'name' => 'action#confirm', 'url' => 'ajax/confirm.php', 'verb' => 'POST' ]
     ]
 ];
