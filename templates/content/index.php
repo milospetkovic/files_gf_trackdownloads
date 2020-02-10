@@ -1,6 +1,6 @@
 <div class="app-content-detail">
 
-    <div class="container">
+    <div class="container unconfirmed-files">
 
     <?php
     if (count($_['data'])) {
@@ -20,7 +20,7 @@
             <?php foreach($_['data'] as $ind => $data) { ?>
                 <tr>
                     <th scope="row">
-                        <input type="checkbox" name="fileid[]" value="<?php echo $data['fileid'] ?>" />
+                        <input type="checkbox" name="fileid[]" class="fileid" value="<?php echo $data['fileid'] ?>" />
                     </th>
                     <td><?php echo $data['uid_initiator'] ?></td>
                     <td><?php echo \OCA\FilesGFTrackDownloads\Util\DateTimeUtility::convertTimestampToUserFriendlyDateTime($data['stime']) ?></td>
