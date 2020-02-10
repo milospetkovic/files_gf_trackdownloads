@@ -40,6 +40,7 @@ foreach ($includes as $app => $include) {
             \OCP\Util::addScript('files_gf_trackdownloads', 'script');
             \OCP\Util::addScript('files_gf_trackdownloads', $include);
             \OCP\Util::addStyle('files_gf_trackdownloads', 'style');
+            //\OCP\Util::addStyle('files_gf_trackdownloads', 'bootstrap.min');
         }
     );
 }

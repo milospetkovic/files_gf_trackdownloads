@@ -124,13 +124,13 @@
 
 })(OCA);
 
-$(document).ready(function() {
+// $(document).ready(function() {
+//
+//     $("#target").contextmenu(function() {
+//         alert( "Handler for .contextmenu() called." );
+//     });
+// });
 
-    $("#target").contextmenu(function() {
-        alert( "Handler for .contextmenu() called." );
-    });
-});
-
-$(function () {
-    $('.icon-more').popover({ });
-});
+// $(function () {
+//     $('.icon-more').popover({ });
+// });

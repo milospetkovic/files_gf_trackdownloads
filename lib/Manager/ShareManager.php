@@ -88,4 +88,25 @@ class ShareManager
         ];
     }
 
+    public function getSharedFilesWithConfirmationDateNotConfirmed($userID)
+    {
+        $query = $this->connection->getQueryBuilder();
+
+        $query->select('sh.id', 'sh.share_with', 'sh.file_source', 'sh.expiration')
+            ->from('share', 'sh')
+            ->where($query->expr()->eq('sh.share_with', $query->createNamedParameter($userID)))
+            ->andWhere($query->expr()->isNotNull('sh.expiration'))
+            ->andWhere($query->expr()->isNull('fc.file_confirmed'))
+            ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'));
+
+//        var_dump($query->getSQL());
+//        die();
+
+        $fetchRes = $query->execute()->fetchAll();
+        var_dump($fetchRes);
+        die();
+
+        return $fetchRes;
+    }
+
 }

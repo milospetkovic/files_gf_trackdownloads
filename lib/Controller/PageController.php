@@ -21,18 +21,27 @@
 
 namespace OCA\FilesGFTrackDownloads\Controller;
 
+use OCA\FilesGFTrackDownloads\Manager\ShareManager;
 use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
 
-class PageController extends Controller {
+class PageController extends Controller
+{
 	private $userId;
 
-	public function __construct($AppName, IRequest $request, $UserId){
+    /**
+     * @var ShareManager
+     */
+    private $shareManager;
+
+    public function __construct($AppName, IRequest $request, $UserId, ShareManager $shareManager)
+    {
 		parent::__construct($AppName, $request);
 		$this->userId = $UserId;
-	}
+        $this->shareManager = $shareManager;
+    }
 
 	/**
 	 * CAUTION: the @Stuff turns off security checks; for this page no admin is
@@ -45,7 +54,7 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() {
-		return new TemplateResponse('files_gf_trackdownloads', 'index');  // templates/index.php
+		return new TemplateResponse('files_gf_trackdownloads', 'index', ['data' => $this->shareManager->getSharedFilesWithConfirmationDateNotConfirmed($this->userId)]);  // templates/index.php
 	}
 
 }
