@@ -29,9 +29,9 @@ $includes = [
 
 $eventDispatcher = \OC::$server->getEventDispatcher();
 
-$eventDispatcher->addListener(\OCP\AppFramework\Http\TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS_LOGGEDIN, function() {
-    \OCP\Util::addScript('files_gf_trackdownloads', 'script');
-});
+//$eventDispatcher->addListener(\OCP\AppFramework\Http\TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS_LOGGEDIN, function() {
+//    \OCP\Util::addScript('files_gf_trackdownloads', 'script');
+//});
 
 foreach ($includes as $app => $include) {
     $eventDispatcher->addListener(

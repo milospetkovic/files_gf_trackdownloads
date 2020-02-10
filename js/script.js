@@ -123,3 +123,14 @@
     $(document).ready(initPage);
 
 })(OCA);
+
+$(document).ready(function() {
+
+    $("#target").contextmenu(function() {
+        alert( "Handler for .contextmenu() called." );
+    });
+});
+
+$(function () {
+    $('.icon-more').popover({ });
+});
