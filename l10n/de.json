@@ -18,6 +18,7 @@
   "Creates activities for downloads of files that were shared with other users or a group" : "Erstellt Aktivitäten zu heruntergeladenen Dateien, die mit anderen Benutzern oder einer Gruppe geteilt wurden",
   "User {user} shared {file} with you": "Benutzer {user} geteilt {file} mit dir",
   "Shared files with expiration date": "Freigegebene Dateien mit Ablaufdatum",
-  "Unconfirmed files": "Nicht bestätigte Dateien"
+  "Unconfirmed files": "Nicht bestätigte Dateien",
+  "No results": "Keine Ergebnisse"
 },"pluralForm" :""
 }
