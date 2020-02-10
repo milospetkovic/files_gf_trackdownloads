@@ -57,12 +57,8 @@
                 // set table row of file/folder as busy
                 context.fileList.showFileBusyState(tr, false);
 
-                //console.log('returned from php method..');
-
                 // parse respone to json format
                 var response = JSON.parse(element);
-
-                //console.log('response: ', response);
 
                 if (!response.error) {
                     context.fileList.reload();
@@ -123,8 +119,6 @@ $(document).ready(function() {
             type: 'POST',
             data: data,
             success: function(element) {
-
-                console.log('returned from php method..');
 
                 // parse respone to json format
                 var response = JSON.parse(element);

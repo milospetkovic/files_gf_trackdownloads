@@ -25,7 +25,12 @@ OC.L10N.register(
         "User {user} shared {file} with you": "Benutzer {user} geteilt {file} mit dir",
         "Shared files with expiration date": "Freigegebene Dateien mit Ablaufdatum",
         "Unconfirmed files": "Nicht bestätigte Dateien",
-        "No results": "Keine Ergebnisse"
+        "No results": "Keine Ergebnisse",
+        "Your unconfirmed files": "Ihre unbestätigten Dateien",
+        "Shared by user": "Vom Benutzer geteilt",
+        "Shared date": "Freigabedatum",
+        "Confirm until": "Bestätigen Sie bis",
+        "File": "Datei",
     },
     ""
 );
