@@ -25,6 +25,7 @@ use OCA\FilesGFTrackDownloads\Manager\FileCacheManager;
 use OCA\FilesGFTrackDownloads\Manager\ShareManager;
 use OCA\FilesGFTrackDownloads\Service\ActivityService;
 use OCP\IConfig;
+use OCP\IDBConnection;
 use OCP\IL10N;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
@@ -46,6 +47,10 @@ class ActionController extends Controller
      * @var ActivityService
      */
     private $activityService;
+    /**
+     * @var IDBConnection
+     */
+    private $connection;
 
     public function __construct(IConfig $config,$AppName,
                                 IRequest $request,
@@ -53,7 +58,8 @@ class ActionController extends Controller
                                 IL10N $l,
                                 FileCacheManager $fileCacheManager,
                                 ShareManager $shareManager,
-                                ActivityService $activityService)
+                                ActivityService $activityService,
+                                IDBConnection $connection)
     {
         parent::__construct($AppName, $request);
         $this->config = $config;
@@ -62,6 +68,7 @@ class ActionController extends Controller
         $this->fileCacheManager = $fileCacheManager;
         $this->shareManager = $shareManager;
         $this->activityService = $activityService;
+        $this->connection = $connection;
     }
 
     /**
@@ -70,10 +77,12 @@ class ActionController extends Controller
      * @param $fileID
      * @return false|string
      */
-    public function confirm($fileID)
+    public function confirm($fileID, $jsonResponse=true)
     {
         $error = 0;
         $error_msg = '';
+
+        $this->connection->beginTransaction();
 
         // check up if file is already confirmed
         $alreadyConfirmed = $this->fileCacheManager->checkUpIfFileOrFolderIsAlreadyConfirmed($fileID);
@@ -103,6 +112,40 @@ class ActionController extends Controller
         // save confirmation to the activity
         if (!$error) {
             $this->activityService->saveFileConfirmationToActivity($fileID);
+        }
+
+        $response = [
+            'error' => $error,
+            'error_msg' => $error_msg
+        ];
+
+        ($error) ? $this->connection->rollBack() : $this->connection->commit();
+
+        if ($jsonResponse) {
+            return json_encode($response);
+        }
+
+        return $response;
+    }
+
+    public function confirmSelectedFiles($files)
+    {
+        $error = 0;
+        $error_msg = '';
+
+        if (is_array($files) && count($files)) {
+
+            foreach ($files as $fileID) {
+                $res = $this->confirm($fileID, false);
+                if ($res['error']) {
+                    $error++;
+                    $error_msg = $this->l->t('Error marking file as confirmed').': "'.$fileID.'"';
+                    break;
+                }
+            }
+        } else {
+            $error++;
+            $error_msg = $this->l->t('Select at least one file for confirmation');
         }
 
         $response = [

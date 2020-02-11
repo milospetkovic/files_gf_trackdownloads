@@ -100,11 +100,7 @@ class ShareManager
             ->andWhere($query->expr()->isNull('fc.file_confirmed'))
             ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'));
 
-        $fetchRes = $query->execute()->fetchAll();
-//        var_dump($fetchRes);
-//        die();
-
-        return $fetchRes;
+        return $query->execute()->fetchAll();
     }
 
 }

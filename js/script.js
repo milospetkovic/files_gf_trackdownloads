@@ -18,8 +18,6 @@
  *
  */
 
-//import { AppNavigation } from '@nextcloud/vue'
-
 (function (OCA) {
 
     OCA.FilesGFTrackDownloads = _.extend({
@@ -106,49 +104,53 @@
 
 })(OCA);
 
-$(document).ready(function() {
-
-    $('.unconfirmed-files .fileid').click(function() {
-
-        var id = $(this).val();
-
-        var data = {
-            fileID: id
-        };
-
-        $.ajax({
-            url: OC.filePath('files_gf_trackdownloads', 'ajax','confirm.php'),
-            type: 'POST',
-            data: data,
-            success: function(element) {
-
-                // parse respone to json format
-                var response = JSON.parse(element);
-
-                if (!response.error) {
-                    location.reload();
-                } else {
-                    OC.dialogs.alert(
-                        t('filesgfdownloadactivity', response.error_msg),
-                        t('filesgfdownloadactivity', 'Error')
-                    );
-                }
-            }
-        });
-    });
-});
-
-
-
-
 var vm = new Vue({
     el: "#app-fgft",
     data: {
-        test: []
+        selectedFiles: [],
+        allSelected: false,
     },
-    mounted: function () {
-        //alert('called alert box when app is mounted');
-        this.test.push('bilo sta');
-        console.log('Test var: ', this.test);
+    methods: {
+        selectOrUnselectAll() {
+            this.selectedFiles = [];
+            if (!this.allSelected) {
+                var vueInstance = this;
+                $('.table-unconfirmed-files .fileid').each(function(i, el) {
+                    vueInstance.selectedFiles.push($(el).val());
+                });
+            }
+        },
+        confirmSelectedFiles() {
+            if (confirm(t('filesgfdownloadactivity', 'Are you sure you want to confirm selected files?'))) {
+
+                var vueInstance = this;
+
+                var data = {
+                    files: vueInstance.selectedFiles
+                };
+
+                $.ajax({
+                    url: OC.filePath('files_gf_trackdownloads', 'ajax','confirmSelectedFiles.php'),
+                        type: 'POST',
+                        data: data,
+                        success: function(element) {
+
+                            // parse respone to json format
+                            var response = JSON.parse(element);
+
+                            if (!response.error) {
+                                location.reload();
+                            } else {
+                                OC.dialogs.alert(
+                                t('filesgfdownloadactivity', response.error_msg),
+                                t('filesgfdownloadactivity', 'Error')
+                            );
+                        }
+                    }
+                });
+            } else {
+                return false;
+            }
+        }
     }
 });

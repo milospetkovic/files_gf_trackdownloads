@@ -26,17 +26,17 @@ class DateTimeUtility
 
     static function convertTimestampToUserFriendlyDateTime($ts)
     {
-        return date('m.d.Y H:i', $ts);
+        return date('d.m.Y H:i', $ts);
     }
 
     static function convertDateTimeToUserFriendlyDateTime($val)
     {
-        return date('m.d.Y H:i', strtotime($val));
+        return date('d.m.Y H:i', strtotime($val));
     }
 
     static function convertDateTimeToUserFriendlyDate($val)
     {
-        return date('m.d.Y', strtotime($val));
+        return date('d.m.Y', strtotime($val));
     }
 
 }

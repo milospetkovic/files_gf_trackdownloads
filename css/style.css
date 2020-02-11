@@ -17,3 +17,6 @@
 .icon-fgft-confirmation {
 	background-image: url("../img/confirmation-icon.svg");
 }
+.unconfirmed-files-section .actionButtons {
+	margin: 5px 0 12px 0;
+}

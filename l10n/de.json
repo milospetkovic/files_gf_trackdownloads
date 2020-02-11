@@ -25,6 +25,8 @@
   "Shared date": "Freigabedatum",
   "Confirm until": "Bestätigen Sie bis",
   "File": "Datei",
-  "Confirm selected files": "Bestätigen Sie die ausgewählten Dateien"
+  "Confirm selected files": "Bestätigen Sie die ausgewählten Dateien",
+  "Are you sure you want to confirm selected files?": "Möchten Sie die ausgewählten Dateien wirklich bestätigen?",
+  "Select at least one file for confirmation": "Bitte wählen Sie mindestens eine Datei zur Bestätigung aus"
 },"pluralForm" :""
 }
