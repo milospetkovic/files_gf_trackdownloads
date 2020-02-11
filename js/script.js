@@ -18,6 +18,8 @@
  *
  */
 
+//import { AppNavigation } from '@nextcloud/vue'
+
 (function (OCA) {
 
     OCA.FilesGFTrackDownloads = _.extend({
@@ -134,12 +136,19 @@ $(document).ready(function() {
             }
         });
     });
-
-    // $("#target").contextmenu(function() {
-    //     alert( "Handler for .contextmenu() called." );
-    // });
 });
 
-// $(function () {
-//     $('.icon-more').popover({ });
-// });
+
+
+
+var vm = new Vue({
+    el: "#app-fgft",
+    data: {
+        test: []
+    },
+    mounted: function () {
+        //alert('called alert box when app is mounted');
+        this.test.push('bilo sta');
+        console.log('Test var: ', this.test);
+    }
+});

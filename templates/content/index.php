@@ -4,6 +4,11 @@
 
             <h2><?php p($l->t('Your unconfirmed files')) ?></h2>
 
+            <div class="actionButtons">
+                <button v-show="true"><?php p($l->t('Confirm selected files')) ?></button>
+            </div>
+
+
         <?php
         if (count($_['data'])) {
         ?>

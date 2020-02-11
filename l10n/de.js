@@ -31,6 +31,7 @@ OC.L10N.register(
         "Shared date": "Freigabedatum",
         "Confirm until": "Bestätigen Sie bis",
         "File": "Datei",
+        "Confirm selected files": "Bestätigen Sie die ausgewählten Dateien",
     },
     ""
 );
