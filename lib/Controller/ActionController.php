@@ -21,11 +21,8 @@
 
 namespace OCA\FilesGFTrackDownloads\Controller;
 
-use OCA\FilesGFTrackDownloads\Manager\FileCacheManager;
-use OCA\FilesGFTrackDownloads\Manager\ShareManager;
-use OCA\FilesGFTrackDownloads\Service\ActivityService;
+use OCA\FilesGFTrackDownloads\Service\FileService;
 use OCP\IConfig;
-use OCP\IDBConnection;
 use OCP\IL10N;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
@@ -35,40 +32,24 @@ class ActionController extends Controller
     private $UserId;
     private $config;
     private $l;
-    /**
-     * @var FileCacheManager
-     */
-    private $fileCacheManager;
-    /**
-     * @var ShareManager
-     */
-    private $shareManager;
-    /**
-     * @var ActivityService
-     */
-    private $activityService;
-    /**
-     * @var IDBConnection
-     */
-    private $connection;
 
-    public function __construct(IConfig $config,$AppName,
+    /**
+     * @var FileService
+     */
+    private $fileService;
+
+    public function __construct(IConfig $config,
+                                $AppName,
                                 IRequest $request,
                                 string $UserId,
                                 IL10N $l,
-                                FileCacheManager $fileCacheManager,
-                                ShareManager $shareManager,
-                                ActivityService $activityService,
-                                IDBConnection $connection)
+                                FileService $fileService)
     {
         parent::__construct($AppName, $request);
+        $this->fileService = $fileService;
         $this->config = $config;
         $this->UserId = $UserId;
         $this->l = $l;
-        $this->fileCacheManager = $fileCacheManager;
-        $this->shareManager = $shareManager;
-        $this->activityService = $activityService;
-        $this->connection = $connection;
     }
 
     /**
@@ -77,83 +58,20 @@ class ActionController extends Controller
      * @param $fileID
      * @return false|string
      */
-    public function confirm($fileID, $jsonResponse=true)
+    public function confirm($fileID)
     {
-        $error = 0;
-        $error_msg = '';
-
-        $this->connection->beginTransaction();
-
-        // check up if file is already confirmed
-        $alreadyConfirmed = $this->fileCacheManager->checkUpIfFileOrFolderIsAlreadyConfirmed($fileID);
-        if ($alreadyConfirmed) {
-            $error++;
-            $error_msg = $this->l->t('File is already confirmed');
-        }
-
-        // check up if file/folder is shared with user and check up expiration date
-        if (!$error) {
-            $result = $this->shareManager->checkUpFileIDIsSharedWithUser($fileID, $this->UserId);
-            if ($result['error']) {
-                $error++;
-                $error_msg = $result['error_msg'];
-            }
-        }
-
-        // mark file as confirmed
-        if (!$error) {
-            $result = $this->fileCacheManager->markFileIDAsConfirmed($fileID);
-            if (!($result > 0)) {
-                $error++;
-                $error_msg = $this->l->t('Error marking file as confirmed');
-            }
-        }
-
-        // save confirmation to the activity
-        if (!$error) {
-            $this->activityService->saveFileConfirmationToActivity($fileID);
-        }
-
-        $response = [
-            'error' => $error,
-            'error_msg' => $error_msg
-        ];
-
-        ($error) ? $this->connection->rollBack() : $this->connection->commit();
-
-        if ($jsonResponse) {
-            return json_encode($response);
-        }
-
-        return $response;
+        return $this->fileService->confirm($fileID);
     }
 
+    /**
+     * @NoAdminRequired
+     *
+     * @param $files
+     * @return false|string
+     */
     public function confirmSelectedFiles($files)
     {
-        $error = 0;
-        $error_msg = '';
-
-        if (is_array($files) && count($files)) {
-
-            foreach ($files as $fileID) {
-                $res = $this->confirm($fileID, false);
-                if ($res['error']) {
-                    $error++;
-                    $error_msg = $this->l->t('Error marking file as confirmed').': "'.$fileID.'"';
-                    break;
-                }
-            }
-        } else {
-            $error++;
-            $error_msg = $this->l->t('Select at least one file for confirmation');
-        }
-
-        $response = [
-            'error' => $error,
-            'error_msg' => $error_msg
-        ];
-
-        return json_encode($response);
+        return $this->fileService->confirmSelectedFiles($files);
     }
 
 }
