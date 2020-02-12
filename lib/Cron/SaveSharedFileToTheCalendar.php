@@ -24,29 +24,23 @@ namespace OCA\FilesGFTrackDownloads\Cron;
 
 
 use OC\BackgroundJob\TimedJob;
-//use OCP\ILogger;
-//use OCA\DAV\CalDAV\CalDavBackend;
-use OCA\FilesGFTrackDownloads\Calendar\CalendarEventForSharedFileWithExpiration;
+use OCA\FilesGFTrackDownloads\Manager\CalendarManager;
 
 class SaveSharedFileToTheCalendar extends TimedJob
 {
     /**
-     * @var CalDavBackend
+     * @var CalendarManager
      */
-    //private $calDavBackend;
-    /**
-     * @var OCA\FilesGFTrackDownloads\Calendar\CalendarEventForSharedFileWithExpiration
-     */
-    private $calEventForFileWithExpiration;
+    private $calendarManager;
 
     /**
-     *
+     * SaveSharedFileToTheCalendar constructor.
+     * @param CalendarManager $calendarManager
      */
-    public function __construct(CalendarEventForSharedFileWithExpiration $calEventForFileWithExpiration)
+    public function __construct(CalendarManager $calendarManager)
     {
         $this->setInterval(-43200); // sets the correct interval for this timed job
-
-        $this->calEventForFileWithExpiration = $calEventForFileWithExpiration;
+        $this->calendarManager = $calendarManager;
     }
 
     /**
@@ -56,7 +50,7 @@ class SaveSharedFileToTheCalendar extends TimedJob
      */
     public function run($argument)
     {
-        return $this->calEventForFileWithExpiration->creteCalendarAndEventForUser();
+        return $this->calendarManager->creteCalendarAndEventForUser();
     }
 
 }

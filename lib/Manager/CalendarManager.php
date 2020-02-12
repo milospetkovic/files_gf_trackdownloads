@@ -19,16 +19,15 @@
  *
  */
 
-namespace OCA\FilesGFTrackDownloads\Calendar;
+namespace OCA\FilesGFTrackDownloads\Manager;
 
 use OCA\DAV\CalDAV\CalDavBackend;
-use OCA\DAV\CalDAV\CalendarObject;
-use OCP\Activity\IEvent;
+use OCP\IDBConnection;
 use OCP\IL10N;
 use Sabre\DAV\Exception;
 use Sabre\DAV\UUIDUtil;
 
-class CalendarEventForSharedFileWithExpiration
+class CalendarManager
 {
     const CALENDAR_PRINCIPAL_URI_PREFIX = 'principals/users/';
 
@@ -42,24 +41,28 @@ class CalendarEventForSharedFileWithExpiration
     private $checkedIfCalendarExistsForUser = [];
 
     private $calendarDisplayName = 'Shared files with expiration date';
+
     /**
      * @var \OCP\IDBConnection
      */
     private $connection;
+
     /**
      * @var IL10N
      */
     private $l;
 
     /**
-     * CalendarEventForSharedFileWithExpiration constructor.
+     * CalendarManager constructor.
      * @param CalDavBackend $calDavBackend
+     * @param IL10N $l
+     * @param IDBConnection $connection
      */
-    public function __construct(CalDavBackend $calDavBackend, IL10N $l)
+    public function __construct(CalDavBackend $calDavBackend, IL10N $l, IDBConnection $connection)
     {
         $this->calDavBackend = $calDavBackend;
-        $this->connection = \OC::$server->getDatabaseConnection();
         $this->l = $l;
+        $this->connection = $connection;
     }
 
     /**
@@ -79,6 +82,30 @@ class CalendarEventForSharedFileWithExpiration
     public function creteCalendarAndEventForUser()
     {
         // get all shared files with expiration date which don't have created calendar event
+        $rows  = $this->getSharedFilesWithExpDateWithoutLinkedCalendarEvent();
+
+        // itterate throw fetched share records
+        if (count($rows)) {
+
+            // start transaction
+            $this->connection->beginTransaction();
+
+            try {
+                foreach ($rows as $ind => $elem) {
+                    $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
+                    $this->createCalendarEvent($calendarID, $elem);
+                }
+                $this->connection->commit();
+            } catch (\Exception $e) {
+                $this->connection->rollBack();
+                echo 'Exception: '.$e->getMessage();
+                echo ' DB error: '.$this->connection->errorInfo();
+            }
+        }
+    }
+
+    public function getSharedFilesWithExpDateWithoutLinkedCalendarEvent()
+    {
         $stmt = $this->connection->prepare(
             'SELECT `id`, `share_with`, `expiration`, `file_target`, `uid_initiator`
                  FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
@@ -90,30 +117,10 @@ class CalendarEventForSharedFileWithExpiration
         while ($row = $stmt->fetch()) {
             $shareRows[] = $row;
         }
-
-        // itterate throw fetched share records
-        if (count($shareRows)) {
-
-            // start transaction
-            $this->connection->beginTransaction();
-
-            try {
-                foreach ($shareRows as $ind => $elem) {
-                    $calendarID = $this->createCalendarForUserIfCalendarNotExists($elem['share_with']);
-                    $this->createCalendarEvent($calendarID, $elem);
-                }
-                $this->connection->commit();
-            } catch (\Exception $e) {
-                $this->connection->rollBack();
-                echo 'Exception: '.$e->getMessage();
-                echo ' DB error: '.$this->connection->errorInfo();
-            }
-        }
-
         $stmt->closeCursor();
+
+        return $shareRows;
     }
-
-
 
     private function translateSharedFileCalenderEvent($subject, array $parameters)
     {
