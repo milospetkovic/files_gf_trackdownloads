@@ -26,11 +26,14 @@ use OC\Files\View;
 use OCA\Activity\CurrentUser;
 use OCA\Activity\Data;
 use OCA\FilesGFTrackDownloads\Activity\Setting;
+use OCA\FilesGFTrackDownloads\Manager\GroupFolderManager;
 use OCP\Activity\IManager;
 use OCP\IDBConnection;
+use OCP\IGroupManager;
 use OCP\ILogger;
 use OCA\FilesGFTrackDownloads\Activity\Provider;
 use OC\Files\Filesystem;
+use OCP\IURLGenerator;
 
 class ActivityService
 {
@@ -64,6 +67,18 @@ class ActivityService
      * @var View
      */
     private $view;
+    /**
+     * @var GroupFolderManager
+     */
+    private $groupFolderManager;
+    /**
+     * @var IURLGenerator
+     */
+    private $urlGenerator;
+    /**
+     * @var IGroupManager
+     */
+    private $groupManager;
 
     /**
      * ActivityService constructor.
@@ -78,7 +93,10 @@ class ActivityService
                                 CurrentUser $currentUser,
                                 Data $activityData,
                                 Setting $activitySetting,
-                                View $view)
+                                View $view,
+                                IGroupManager $groupManager,
+                                GroupFolderManager $groupFolderManager,
+                                IURLGenerator $urlGenerator)
     {
         $this->activityManager = $activityManager;
         $this->connection = $connection;
@@ -87,6 +105,9 @@ class ActivityService
         $this->activityData = $activityData;
         $this->activitySetting = $activitySetting;
         $this->view = $view;
+        $this->groupManager = $groupManager;
+        $this->groupFolderManager = $groupFolderManager;
+        $this->urlGenerator = $urlGenerator;
     }
 
     public function saveFileConfirmationToActivity($fileID)
@@ -102,7 +123,6 @@ class ActivityService
         $objectType = 'files';
         $fileId = $fileID;
         $path = Filesystem::getPath($fileID);
-        //$info = Filesystem::getFileInfo($path);
 
         $link = ''; // here link to the file
         $subjectParams = [[$fileId => $path], $this->currentUser->getUserIdentifier()];
@@ -127,6 +147,48 @@ class ActivityService
         // Add activity to stream
         if (true) {
             $res = $this->activityData->send($event);
+        }
+    }
+
+    public function saveToActivityDownloadOfFileInGroupFolder($assignedGroups, $subject, $subjectParams, $fileId, $filePath, $linkData)
+    {
+        // current timestamp
+        $timeStamp = time();
+
+        $userID = $this->currentUser->getUID();
+
+        // save activity to each user from assigned user group(s) for group folder
+        if (is_array($assignedGroups) && count($assignedGroups)) {
+            foreach ($assignedGroups as $assignedGroupName) {
+
+                // get all users in user group
+                $usersInGroup = $this->groupManager->get($assignedGroupName)->getUsers();
+
+                if (is_array($usersInGroup) && count($usersInGroup)) {
+                    foreach ($usersInGroup as $user) {
+                        try {
+                            $event = $this->activityManager->generateEvent();
+                            $event->setApp('files_gf_trackdownloads')
+                                ->setType('file_gf')
+                                ->setAffectedUser($userID)
+                                //->setAuthor($this->currentUser->getUID())
+                                ->setTimestamp($timeStamp)
+                                ->setSubject($subject, $subjectParams)
+                                ->setObject('files', $fileId, $filePath)
+                                ->setLink($this->urlGenerator->linkToRouteAbsolute('files.view.index', $linkData));
+                            $this->activityManager->publish($event);
+                        } catch (\InvalidArgumentException $e) {
+                            $this->logger->logException($e, [
+                                'app' => 'files_gf_trackdownloads',
+                            ]);
+                        } catch (\BadMethodCallException $e) {
+                            $this->logger->logException($e, [
+                                'app' => 'files_gf_trackdownloads',
+                            ]);
+                        }
+                    }
+                }
+            }
         }
     }
 

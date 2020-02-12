@@ -23,6 +23,7 @@ namespace OCA\FilesGFTrackDownloads\Activity;
 
 use OC\Files\Filesystem;
 use OCA\FilesGFTrackDownloads\CurrentUser;
+use OCA\FilesGFTrackDownloads\Service\ActivityService;
 use OCA\GroupFolders\AppInfo\Application;
 use OCA\GroupFolders\Folder\FolderManager;
 use OCP\Activity\IManager;
@@ -54,6 +55,10 @@ class Listener
     protected $groupManager;
     /** @var GroupFolderManager */
     protected $groupFolderManager;
+    /**
+     * @var ActivityService
+     */
+    private $activityService;
 
     /**
      * @param IRequest $request
@@ -65,7 +70,15 @@ class Listener
      * @param IGroupManager $groupManager
      * @param FolderManager $groupFolderManager
      */
-    public function __construct(IRequest $request, IManager $activityManager, IURLGenerator $urlGenerator, IRootFolder $rootFolder, CurrentUser $currentUser, ILogger $logger, IGroupManager $groupManager, GroupFolderManager $groupFolderManager)
+    public function __construct(IRequest $request,
+                                IManager $activityManager,
+                                IURLGenerator $urlGenerator,
+                                IRootFolder $rootFolder,
+                                CurrentUser $currentUser,
+                                ILogger $logger,
+                                IGroupManager $groupManager,
+                                GroupFolderManager $groupFolderManager,
+                                ActivityService $activityService)
     {
         $this->request = $request;
         $this->activityManager = $activityManager;
@@ -75,6 +88,7 @@ class Listener
         $this->logger = $logger;
         $this->groupManager = $groupManager;
         $this->groupFolderManager = $groupFolderManager;
+        $this->activityService = $activityService;
     }
 
     /**
@@ -148,42 +162,7 @@ class Listener
                 ];
             }
 
-            // current timestamp
-            $timeStamp = time();
-
-            // save activity to each user from assigned user group(s) for group folder
-            if (is_array($assignedGroups) && count($assignedGroups)) {
-                foreach ($assignedGroups as $assignedGroupName) {
-
-                    // get all users in user group
-                    $usersInGroup = $this->groupManager->get($assignedGroupName)->getUsers();
-
-                    if (is_array($usersInGroup) && count($usersInGroup)) {
-                        foreach ($usersInGroup as $user) {
-                            try {
-                                $event = $this->activityManager->generateEvent();
-                                $event->setApp('files_gf_trackdownloads')
-                                    ->setType('file_gf')
-                                    ->setAffectedUser($user->getUID())
-                                    //->setAuthor($this->currentUser->getUID())
-                                    ->setTimestamp($timeStamp)
-                                    ->setSubject($subject, $subjectParams)
-                                    ->setObject('files', $fileId, $filePath)
-                                    ->setLink($this->urlGenerator->linkToRouteAbsolute('files.view.index', $linkData));
-                                $this->activityManager->publish($event);
-                            } catch (\InvalidArgumentException $e) {
-                                $this->logger->logException($e, [
-                                    'app' => 'files_gf_trackdownloads',
-                                ]);
-                            } catch (\BadMethodCallException $e) {
-                                $this->logger->logException($e, [
-                                    'app' => 'files_gf_trackdownloads',
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
+            $this->activityService->saveToActivityDownloadOfFileInGroupFolder($assignedGroups, $subject, $subjectParams, $fileId, $filePath, $linkData);
         }
     }
 
