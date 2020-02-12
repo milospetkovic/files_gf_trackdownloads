@@ -36,7 +36,8 @@ use OCP\IURLGenerator;
 use OCP\IGroupManager;
 use OCA\FilesGFTrackDownloads\Manager\GroupFolderManager;
 
-class Listener {
+class Listener
+{
     /** @var IRequest */
     protected $request;
     /** @var IManager */
@@ -64,7 +65,8 @@ class Listener {
      * @param IGroupManager $groupManager
      * @param FolderManager $groupFolderManager
      */
-    public function __construct(IRequest $request, IManager $activityManager, IURLGenerator $urlGenerator, IRootFolder $rootFolder, CurrentUser $currentUser, ILogger $logger, IGroupManager $groupManager, GroupFolderManager $groupFolderManager) {
+    public function __construct(IRequest $request, IManager $activityManager, IURLGenerator $urlGenerator, IRootFolder $rootFolder, CurrentUser $currentUser, ILogger $logger, IGroupManager $groupManager, GroupFolderManager $groupFolderManager)
+    {
         $this->request = $request;
         $this->activityManager = $activityManager;
         $this->urlGenerator = $urlGenerator;
@@ -79,8 +81,8 @@ class Listener {
      * Store the update hook events
      * @param string $path Path of the file that has been read
      */
-    public function readFile($path) {
-
+    public function readFile($path)
+    {
         $appFilePath = ltrim($path, '/');
 
         $expAppFilePath = explode('/', $appFilePath);
@@ -201,7 +203,8 @@ class Listener {
      * @throws NotFoundException
      * @throws InvalidPathException
      */
-    protected function getSourcePathAndOwner($path) {
+    protected function getSourcePathAndOwner($path)
+    {
         $currentUserId = $this->currentUser->getUID();
         $userFolder = $this->rootFolder->getUserFolder($currentUserId);
         $node = $userFolder->get($path);

@@ -4,11 +4,11 @@
 
     <id>files_gf_trackdownloads</id>
 
-    <name>Files In Group Folder Track Downloads</name>
+    <name>Track downloads of files in group folders</name>
 
     <summary>Activities for file downloads in group folders</summary>
 
-    <description><![CDATA[Activities for file downloads of files which are placed in group folders. Info about downloads will be visible in activity for super admins and admins of a group folder where downloaded file was placed.]]></description>
+    <description><![CDATA[Save to activity downloads of files which are placed in group folders. Info about downloads will be visible in activity for super admins and users assigned to user groups assigned for group folder.]]></description>
 
     <version>1.0.0</version>
     <licence>agpl</licence>

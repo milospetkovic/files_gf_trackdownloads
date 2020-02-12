@@ -31,11 +31,21 @@ class GroupFolderManager
      */
     private $connection;
 
+    /**
+     * GroupFolderManager constructor.
+     * @param IDBConnection $connection
+     */
     public function __construct(IDBConnection $connection)
     {
         $this->connection = $connection;
     }
 
+    /**
+     * Get group folder's id searching group folder by it's name
+     *
+     * @param null $groupFolderName
+     * @return mixed|null
+     */
     public function getGroupFolderIdByGroupFolderName($groupFolderName=null)
     {
         if ($groupFolderName) {
@@ -56,6 +66,12 @@ class GroupFolderManager
         return null;
     }
 
+    /**
+     * Get assigned user groups ids which are assigned to the group folder ID
+     *
+     * @param null $groupFolderID
+     * @return array
+     */
     public function getAssignedGroupsIdsToGroupFolderId($groupFolderID=null)
     {
         $ret = [];

@@ -44,6 +44,8 @@ class PageController extends Controller
     }
 
 	/**
+     * Index page - show user's unconfirmed files
+     *
 	 * CAUTION: the @Stuff turns off security checks; for this page no admin is
 	 *          required and no CSRF check. If you don't know what CSRF is, read
 	 *          it up in the docs or you might create a security hole. This is
@@ -53,7 +55,8 @@ class PageController extends Controller
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 */
-	public function index() {
+	public function index()
+    {
 		return new TemplateResponse('files_gf_trackdownloads', 'index', ['data' => $this->shareManager->getSharedFilesWithConfirmationDateNotConfirmed($this->userId)]);  // templates/index.php
 	}
 
