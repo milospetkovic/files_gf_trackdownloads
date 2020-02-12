@@ -27,7 +27,6 @@ use OCP\IL10N;
 
 class ShareManager
 {
-
     /**
      * @var IDBConnection
      */
@@ -37,6 +36,11 @@ class ShareManager
      */
     private $l;
 
+    /**
+     * ShareManager constructor.
+     * @param IDBConnection $connection
+     * @param IL10N $l
+     */
     public function __construct(IDBConnection $connection, IL10N $l)
     {
         $this->connection = $connection;

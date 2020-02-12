@@ -31,7 +31,8 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\L10N\IFactory;
 
-class Provider implements IProvider {
+class Provider implements IProvider
+{
 
     /** @var IFactory */
     protected $languageFactory;
@@ -57,8 +58,19 @@ class Provider implements IProvider {
     /** @var string */
     protected $lastType = '';
 
+    /**
+     * Subject for activity when file in group folder is downloaded
+     */
     const SUBJECT_SHARED_GF_FILE_DOWNLOADED = 'shared_gf_file_downloaded';
+
+    /**
+     * Subject for activity when folder in group folder is downloaded
+     */
     const SUBJECT_SHARED_GF_FOLDER_DOWNLOADED = 'shared_gf_folder_downloaded';
+
+    /**
+     * Subject for activity when file is confirmed
+     */
     const SUBJECT_GF_FILE_CONFIRMED = 'file_gf_confirmed';
 
     /**
@@ -68,7 +80,8 @@ class Provider implements IProvider {
      * @param IUserManager $userManager
      * @param IEventMerger $eventMerger
      */
-    public function __construct(IFactory $languageFactory, IURLGenerator $url, IManager $activityManager, IUserManager $userManager, IEventMerger $eventMerger) {
+    public function __construct(IFactory $languageFactory, IURLGenerator $url, IManager $activityManager, IUserManager $userManager, IEventMerger $eventMerger)
+    {
         $this->languageFactory = $languageFactory;
         $this->url = $url;
         $this->activityManager = $activityManager;
@@ -84,7 +97,8 @@ class Provider implements IProvider {
      * @throws \InvalidArgumentException
      * @since 11.0.0
      */
-    public function parse($language, IEvent $event, IEvent $previousEvent = null) {
+    public function parse($language, IEvent $event, IEvent $previousEvent = null)
+    {
         if ($event->getApp() !== 'files_gf_trackdownloads') {
             throw new \InvalidArgumentException();
         }
@@ -114,7 +128,8 @@ class Provider implements IProvider {
      * @throws \InvalidArgumentException
      * @since 11.0.0
      */
-    public function parseShortVersion(IEvent $event, IEvent $previousEvent = null) {
+    public function parseShortVersion(IEvent $event, IEvent $previousEvent = null)
+    {
         $parsedParameters = $this->getParsedParameters($event);
         $params = $event->getSubjectParameters();
 
@@ -208,7 +223,8 @@ class Provider implements IProvider {
      * @param array $parameters
      * @throws \InvalidArgumentException
      */
-    protected function setSubjects(IEvent $event, $subject, array $parameters) {
+    protected function setSubjects(IEvent $event, $subject, array $parameters)
+    {
         $placeholders = $replacements = [];
         foreach ($parameters as $placeholder => $parameter) {
             $placeholders[] = '{' . $placeholder . '}';

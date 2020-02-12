@@ -78,25 +78,22 @@ class Listener
     }
 
     /**
-     * Store the update hook events
+     * Method saves info about file download action to activity in case the downloaded file is placed in the Group Folder
+     *
      * @param string $path Path of the file that has been read
      */
     public function readFile($path)
     {
-        $appFilePath = ltrim($path, '/');
+        // check up if file is placed in group folder
+        $groupFolderID = $this->groupFolderManager->getGroupFolderIDByFilePath($path);
 
-        $expAppFilePath = explode('/', $appFilePath);
-
-        $firstFolderForAppFilePath = $expAppFilePath[0];
-
-        $groupFolderID = $this->groupFolderManager->getGroupFolderIdByGroupFolderName($firstFolderForAppFilePath);
-
-        // fetch
         if ($groupFolderID > 0) {
+
+            // get assigned user groups to the group folder
             $assignedGroups = $this->groupFolderManager->getAssignedGroupsIdsToGroupFolderId($groupFolderID);
 
+            // add super admin user group (in case if admin user group is not assigned to the group folder)
             $defaultAdminGroup = 'admin';
-
             if (!in_array($defaultAdminGroup, $assignedGroups)) {
                 $assignedGroups[] = $defaultAdminGroup;
             }
@@ -119,11 +116,7 @@ class Listener
                 return;
             }
 
-//        if ($this->currentUser->getUID() === $owner) {
-//            // Could not find the file for the owner ...
-//            return;
-//        }
-
+            // get client's device
             $client = 'web';
             if ($this->request->isUserAgent([IRequest::USER_AGENT_CLIENT_DESKTOP])) {
                 $client = 'desktop';
@@ -131,7 +124,7 @@ class Listener
                 $client = 'mobile';
             }
 
-            // Check if Current User is Guest
+            // Check if current user is guest
             if ($this->currentUser->getUserIdentifier() === '') {
                 $requestor = 'Anonymous ' . $_SERVER['REMOTE_ADDR'];
             } else {
@@ -155,21 +148,18 @@ class Listener
                 ];
             }
 
+            // current timestamp
             $timeStamp = time();
 
+            // save activity to each user from assigned user group(s) for group folder
             if (is_array($assignedGroups) && count($assignedGroups)) {
-
                 foreach ($assignedGroups as $assignedGroupName) {
 
+                    // get all users in user group
                     $usersInGroup = $this->groupManager->get($assignedGroupName)->getUsers();
 
                     if (is_array($usersInGroup) && count($usersInGroup)) {
                         foreach ($usersInGroup as $user) {
-
-//                            if ($user->getUID() === $owner) {
-//                                continue;
-//                            }
-
                             try {
                                 $event = $this->activityManager->generateEvent();
                                 $event->setApp('files_gf_trackdownloads')
@@ -198,10 +188,13 @@ class Listener
     }
 
     /**
-     * @param string $path
+     * Method retrieves parameters for file from file's path
+     *
+     * @param $path
      * @return array
-     * @throws NotFoundException
      * @throws InvalidPathException
+     * @throws NotFoundException
+     * @throws \OC\User\NoUserException
      */
     protected function getSourcePathAndOwner($path)
     {
@@ -235,7 +228,7 @@ class Listener
             $path,
             $owner,
             $node->getId(),
-            $node instanceof Folder/* || $node instanceof GroupFolder*/
+            $node instanceof Folder
         ];
     }
 }

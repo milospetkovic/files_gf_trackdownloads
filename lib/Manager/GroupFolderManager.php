@@ -98,4 +98,18 @@ class GroupFolderManager
         return $ret;
     }
 
+    /**
+     * Get id of group folder of file by file's path
+     *
+     * @param $path
+     * @return mixed|null
+     */
+    public function getGroupFolderIDByFilePath($path)
+    {
+        $appFilePath = ltrim($path, '/');
+        $expAppFilePath = explode('/', $appFilePath);
+        $firstFolderForAppFilePath = $expAppFilePath[0];
+        return $this->getGroupFolderIdByGroupFolderName($firstFolderForAppFilePath);
+    }
+
 }

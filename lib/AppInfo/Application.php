@@ -25,25 +25,34 @@ use OCA\FilesGFTrackDownloads\Activity\Listener;
 use OCP\AppFramework\App;
 use OCP\Util;
 
-class Application extends App {
-
-    public function __construct() {
+class Application extends App
+{
+    /**
+     * Application constructor.
+     */
+    public function __construct()
+    {
         parent::__construct('files_gf_trackdownloads');
     }
 
     /**
      * Register all hooks and listeners
      */
-    public function register() {
-        Util::connectHook('OC_Filesystem', 'read', $this, 'listenReadFile2');
+    public function register()
+    {
+        // hook - file read
+        Util::connectHook('OC_Filesystem', 'read', $this, 'listenReadFileInGroupFolder');
     }
 
     /**
+     * Methods executes listener when user downloads a file
+     *
      * @param array $params
      */
-    public function listenReadFile2($params) {
+    public function listenReadFileInGroupFolder($params) {
         /** @var Listener $hooks */
         $hooks = $this->getContainer()->query(Listener::class);
         $hooks->readFile($params['path']);
     }
+
 }
