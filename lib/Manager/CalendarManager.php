@@ -76,13 +76,13 @@ class CalendarManager
     }
 
     /**
-     * Create a calendar which will hold all events for shared files with expiration date for user (if the calendar doesn't exist)
+     * Create a calendar which will hold all events for shared files with expiration date for a user (if the calendar doesn't exist)
      * and create event(s) in the calendar
      */
     public function creteCalendarAndEventForUser()
     {
         // get all shared files with expiration date which don't have created calendar event
-        $rows  = $this->getSharedFilesWithExpDateWithoutLinkedCalendarEvent();
+        $rows  = $this->getSharedFilesWithExpDateWithoutLinkedCalendarEventWhichAreNotConfirmed();
 
         // itterate throw fetched share records
         if (count($rows)) {
@@ -104,11 +104,20 @@ class CalendarManager
         }
     }
 
-    public function getSharedFilesWithExpDateWithoutLinkedCalendarEvent()
+    /**
+     * Get shared files which have expiration date and which are without it's linked calendar event
+     *
+     * @return array
+     */
+    public function getSharedFilesWithExpDateWithoutLinkedCalendarEventWhichAreNotConfirmed()
     {
         $stmt = $this->connection->prepare(
-            'SELECT `id`, `share_with`, `expiration`, `file_target`, `uid_initiator`
-                 FROM `*PREFIX*share` WHERE `elb_calendar_object_id` is null AND `expiration` is NOT null'
+            'SELECT `sh`.`id`, `sh`.`share_with`, `sh`.`expiration`, `sh`.`file_target`, `sh`.`uid_initiator`
+                 FROM `*PREFIX*share` as sh
+                 LEFT JOIN `*PREFIX*filecache` as fc on `fc`.`fileid`=`sh`.`file_source` 
+                 WHERE `sh`.`elb_calendar_object_id` is null 
+                 AND `sh`.`expiration` is NOT null
+                 and `fc`.`file_confirmed` is null'
         );
         $stmt->execute();
 
@@ -122,6 +131,13 @@ class CalendarManager
         return $shareRows;
     }
 
+    /**
+     * Replace placeholders with data from parameters variable
+     *
+     * @param $subject
+     * @param array $parameters
+     * @return string|string[]
+     */
     private function translateSharedFileCalenderEvent($subject, array $parameters)
     {
         foreach ($parameters as $paramKey => $paramVal) {
@@ -130,6 +146,14 @@ class CalendarManager
         return $subject;
     }
 
+    /**
+     * Create calendar event for shared file with expiration date
+     *
+     * @param $calendarID
+     * @param $shareData
+     * @return bool
+     * @throws Exception\BadRequest
+     */
     public function createCalendarEvent($calendarID, $shareData)
     {
         // uuid for .ics
@@ -194,7 +218,7 @@ EOD;
 
         $calendarType = CalDavBackend::CALENDAR_TYPE_CALENDAR;
 
-        // call method which executes creating calendar object
+        // call method which executes creating calendar event
         $response = $this->calDavBackend->createCalendarObject($calendarID, $uri, $calData, $calendarType);
 
         if (strlen($response)) {
