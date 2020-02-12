@@ -1,11 +1,11 @@
 <?php
-
 use OCA\FilesGFTrackDownloads\Util\DateTimeUtility;
+use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
 
 ?>
 
 <div class="app-content-detail">
-    <div id="container" class="container unconfirmed-files">
+    <div id="container" class="container-fluid unconfirmed-files">
         <div class="section unconfirmed-files-section group">
             <div class="row">
                 <div class="col-xs-12">
@@ -23,7 +23,7 @@ use OCA\FilesGFTrackDownloads\Util\DateTimeUtility;
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-unconfirmed-files">
+                            <table class="table table-bordered table-hover table-sm table-unconfirmed-files">
                                 <thead>
                                     <tr>
                                         <th>
@@ -39,13 +39,13 @@ use OCA\FilesGFTrackDownloads\Util\DateTimeUtility;
                                 <tbody>
                                 <?php foreach($_['data'] as $ind => $data) { ?>
                                     <tr>
-                                        <th scope="row">
+                                        <td>
                                             <input type="checkbox" name="fileid[]" class="fileid" v-model="selectedFiles" value="<?php echo $data['fileid'] ?>" />
-                                        </th>
+                                        </td>
                                         <td><?php echo $data['uid_initiator'] ?></td>
                                         <td><?php echo DateTimeUtility::convertTimestampToUserFriendlyDateTime($data['stime']) ?></td>
                                         <td><?php echo DateTimeUtility::convertDateTimeToUserFriendlyDate($data['expiration']) ?></td>
-                                        <td><?php echo $data['file_target'] ?></td>
+                                        <td><?php print_unescaped(LinkToObjectUtility::returnLinkToTheFile($data['fileid'], ltrim($data['file_target'], '/'))) ?></td>
                                     </tr>
                                 <?php } ?>
                                 </tbody>
