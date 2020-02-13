@@ -25,7 +25,6 @@ use OCP\IDBConnection;
 
 class GroupFolderManager
 {
-
     /**
      * @var IDBConnection
      */

@@ -133,12 +133,22 @@ class Provider implements IProvider
         $parsedParameters = $this->getParsedParameters($event);
         $params = $event->getSubjectParameters();
 
-        if ($params[2] === 'desktop') {
-            $subject = $this->l->t('Confirmed by {actor} (via desktop)');
-        } else if ($params[2] === 'mobile') {
-            $subject = $this->l->t('Confirmed by {actor} (via app)');
-        } else {
-            $subject = $this->l->t('Confirmed by {actor} (via browser)');
+        if (in_array($event->getSubject(), [self::SUBJECT_SHARED_GF_FILE_DOWNLOADED, self::SUBJECT_SHARED_GF_FOLDER_DOWNLOADED])) {
+            if ($params[2] === 'desktop') {
+                $subject = $this->l->t('Downloaded by {actor} (via desktop)');
+            } else if ($params[2] === 'mobile') {
+                $subject = $this->l->t('Downloaded by {actor} (via app)');
+            } else {
+                $subject = $this->l->t('Downloaded by {actor} (via browser)');
+            }
+        } elseif($event->getSubject() == self::SUBJECT_GF_FILE_CONFIRMED) {
+            if ($params[2] === 'desktop') {
+                $subject = $this->l->t('Confirmed by {actor} (via desktop)');
+            } else if ($params[2] === 'mobile') {
+                $subject = $this->l->t('Confirmed by {actor} (via app)');
+            } else {
+                $subject = $this->l->t('Confirmed by {actor} (via browser)');
+            }
         }
 
         $this->setSubjects($event, $subject, $parsedParameters);
