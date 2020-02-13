@@ -123,17 +123,17 @@ var vm = new Vue({
 
                 $.ajax({
                     url: OC.filePath('files_gf_trackdownloads', 'ajax','confirmSelectedFiles.php'),
-                        type: 'POST',
-                        data: data,
-                        success: function(element) {
+                    type: 'POST',
+                    data: data,
+                    success: function(element) {
 
-                            // parse respone to json format
-                            var response = JSON.parse(element);
+                        // parse respone to json format
+                        var response = JSON.parse(element);
 
-                            if (!response.error) {
-                                location.reload();
-                            } else {
-                                OC.dialogs.alert(
+                        if (!response.error) {
+                            location.reload();
+                        } else {
+                            OC.dialogs.alert(
                                 t('filesgfdownloadactivity', response.error_msg),
                                 t('filesgfdownloadactivity', 'Error')
                             );
