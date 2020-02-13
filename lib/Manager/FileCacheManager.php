@@ -33,11 +33,21 @@ class FileCacheManager
      */
     private $connection;
 
+    /**
+     * FileCacheManager constructor.
+     * @param IDBConnection $connection
+     */
     public function __construct(IDBConnection $connection)
     {
         $this->connection = $connection;
     }
 
+    /**
+     * Check up if file is confirmed
+     *
+     * @param $fileCacheID
+     * @return mixed|null
+     */
     public function checkUpIfFileOrFolderIsAlreadyConfirmed($fileCacheID)
     {
         $ret = null;
@@ -59,6 +69,12 @@ class FileCacheManager
         return $ret;
     }
 
+    /**
+     * Mark file as confirmed
+     *
+     * @param $fileID
+     * @return \Doctrine\DBAL\Driver\Statement|int
+     */
     public function markFileIDAsConfirmed($fileID)
     {
         $query = $this->connection->getQueryBuilder();

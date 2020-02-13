@@ -37,8 +37,6 @@ use OCP\IURLGenerator;
 
 class ActivityService
 {
-    /** @var \OCP\Activity\IManager */
-    protected $manager;
     /**
      * @var IManager
      */
@@ -86,6 +84,12 @@ class ActivityService
      * @param IDBConnection $connection
      * @param ILogger $logger
      * @param CurrentUser $currentUser
+     * @param Data $activityData
+     * @param Setting $activitySetting
+     * @param View $view
+     * @param IGroupManager $groupManager
+     * @param GroupFolderManager $groupFolderManager
+     * @param IURLGenerator $urlGenerator
      */
     public function __construct(IManager $activityManager,
                                 IDBConnection $connection,
@@ -114,6 +118,7 @@ class ActivityService
      * Save confirmation of file to the activity
      *
      * @param $fileID
+     * @return bool
      * @throws \OCP\Files\NotFoundException
      */
     public function saveFileConfirmationToActivity($fileID)
@@ -211,8 +216,19 @@ class ActivityService
                 }
             }
         }
+        return true;
     }
 
+    /**
+     * Save to the activity download of file from group folder for each user assigned to the group folder
+     *
+     * @param $assignedGroups
+     * @param $subject
+     * @param $subjectParams
+     * @param $fileId
+     * @param $filePath
+     * @param $linkData
+     */
     public function saveToActivityDownloadOfFileInGroupFolder($assignedGroups, $subject, $subjectParams, $fileId, $filePath, $linkData)
     {
         // current timestamp

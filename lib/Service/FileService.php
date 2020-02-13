@@ -63,9 +63,11 @@ class FileService
     }
 
     /**
+     * Mark file as confirmed and save info about confirmation to the activity stream
      *
      * @param $fileID
      * @return false|string
+     * @throws \OCP\Files\NotFoundException
      */
     public function confirm($fileID, $jsonResponse=true)
     {
@@ -104,9 +106,6 @@ class FileService
             $this->activityService->saveFileConfirmationToActivity($fileID);
         }
 
-        // debug
-        $error++;
-
         $response = [
             'error' => $error,
             'error_msg' => $error_msg
@@ -122,9 +121,11 @@ class FileService
     }
 
     /**
+     * Mark provided array of files as confirmed and save info about confirmation to the activity stream
      *
      * @param $files
      * @return false|string
+     * @throws \OCP\Files\NotFoundException
      */
     public function confirmSelectedFiles($files)
     {
@@ -152,6 +153,5 @@ class FileService
 
         return json_encode($response);
     }
-
 
 }

@@ -22,12 +22,13 @@ class Version100000000Date20200131131405 extends SimpleMigrationStep {
 	public function preSchemaChange(IOutput $output, Closure $schemaClosure, array $options) {
 	}
 
-	/**
-	 * @param IOutput $output
-	 * @param Closure $schemaClosure The `\Closure` returns a `ISchemaWrapper`
-	 * @param array $options
-	 * @return null|ISchemaWrapper
-	 */
+    /**
+     * @param IOutput $output
+     * @param Closure $schemaClosure The `\Closure` returns a `ISchemaWrapper`
+     * @param array $options
+     * @return null|ISchemaWrapper
+     * @throws \Doctrine\DBAL\Schema\SchemaException
+     */
 	public function changeSchema(IOutput $output, Closure $schemaClosure, array $options)
     {
         /** @var ISchemaWrapper $schema */

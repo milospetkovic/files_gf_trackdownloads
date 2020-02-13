@@ -24,16 +24,34 @@ namespace OCA\FilesGFTrackDownloads\Util;
 class DateTimeUtility
 {
 
+    /**
+     * Convert timestamp format to user friendly datetime format
+     *
+     * @param $ts
+     * @return false|string
+     */
     static function convertTimestampToUserFriendlyDateTime($ts)
     {
         return date('d.m.Y H:i', $ts);
     }
 
+    /**
+     * Convert datetime format to user friendly datetime format
+     *
+     * @param $val
+     * @return false|string
+     */
     static function convertDateTimeToUserFriendlyDateTime($val)
     {
         return date('d.m.Y H:i', strtotime($val));
     }
 
+    /**
+     * Convert datetime format to user friendly date format
+     *
+     * @param $val
+     * @return false|string
+     */
     static function convertDateTimeToUserFriendlyDate($val)
     {
         return date('d.m.Y', strtotime($val));

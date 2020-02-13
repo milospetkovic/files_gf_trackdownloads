@@ -47,6 +47,13 @@ class ShareManager
         $this->l = $l;
     }
 
+    /**
+     * Check if file is shared with user
+     *
+     * @param $fileID
+     * @param $userID
+     * @return array
+     */
     public function checkUpFileIDIsSharedWithUser($fileID, $userID)
     {
         $error = 0;
@@ -92,6 +99,12 @@ class ShareManager
         ];
     }
 
+    /**
+     * Get all files shared with user which has defined expiration date and which are not confirmed
+     *
+     * @param $userID
+     * @return mixed[]
+     */
     public function getSharedFilesWithConfirmationDateNotConfirmed($userID)
     {
         $query = $this->connection->getQueryBuilder();

@@ -44,12 +44,16 @@ class CurrentUser
 	/** @var string|false|null */
 	protected $sessionUser;
 
-	/**
-	 * @param IUserSession $userSession
-	 * @param IRequest $request
-	 * @param IManager $shareManager
-	 */
-	public function __construct(IUserSession $userSession, IRequest $request, IManager $shareManager) {
+    /**
+     * CurrentUser constructor.
+     * @param IUserSession $userSession
+     * @param IRequest $request
+     * @param IManager $shareManager
+     */
+	public function __construct(IUserSession $userSession,
+                                IRequest $request,
+                                IManager $shareManager)
+    {
 		$this->userSession = $userSession;
 		$this->request = $request;
 		$this->shareManager = $shareManager;
@@ -58,9 +62,11 @@ class CurrentUser
 
 	/**
 	 * Get an identifier for the user, session or token
+     *
 	 * @return string
 	 */
-	public function getUserIdentifier() {
+	public function getUserIdentifier()
+    {
 		if ($this->identifier === null) {
 			$this->identifier = $this->getUID();
 
@@ -81,7 +87,8 @@ class CurrentUser
 	 * Get the current user from the session
 	 * @return string|null
 	 */
-	public function getUID() {
+	public function getUID()
+    {
 		if ($this->sessionUser === false) {
 			$user = $this->userSession->getUser();
 			if ($user instanceof IUser) {
@@ -98,7 +105,8 @@ class CurrentUser
 	 * Get the cloud ID from the sharing token
 	 * @return string|null
 	 */
-	protected function getCloudIDFromToken() {
+	protected function getCloudIDFromToken()
+    {
 		if (!empty($this->request->server['PHP_AUTH_USER'])) {
 			$token = $this->request->server['PHP_AUTH_USER'];
 			try {
@@ -113,4 +121,5 @@ class CurrentUser
 
 		return null;
 	}
+
 }
