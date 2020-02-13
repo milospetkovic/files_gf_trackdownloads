@@ -110,43 +110,106 @@ class ActivityService
         $this->urlGenerator = $urlGenerator;
     }
 
+    /**
+     * Save confirmation of file to the activity
+     *
+     * @param $fileID
+     * @throws \OCP\Files\NotFoundException
+     */
     public function saveFileConfirmationToActivity($fileID)
     {
-        $event = $this->activityManager->generateEvent();
-
         $app = 'files_gf_trackdownloads';
         $type = $this->activitySetting->getIdentifier();
 
-        $user = $this->currentUser->getUID();
+        $currentUserID = $this->currentUser->getUID();
 
         $subject = Provider::SUBJECT_GF_FILE_CONFIRMED;
         $objectType = 'files';
         $fileId = $fileID;
         $path = Filesystem::getPath($fileID);
 
-        $link = ''; // here link to the file
+        $linkData = [
+            'dir' => $path
+        ];
+
+        $link = $this->urlGenerator->linkToRouteAbsolute('files.view.index', $linkData); // here link to the file
         $subjectParams = [[$fileId => $path], $this->currentUser->getUserIdentifier()];
 
         try {
+            $event = $this->activityManager->generateEvent();
             $event->setApp($app)
                 ->setType($type)
-                ->setAffectedUser($user)
+                ->setAffectedUser($currentUserID)
                 ->setTimestamp(time())
                 ->setSubject($subject, $subjectParams)
                 ->setObject($objectType, $fileId, $path)
                 ->setLink($link);
 
-            if ($this->currentUser->getUID() !== null) {
+            if ($currentUserID !== null) {
                 // Allow this to be empty for guests
-                $event->setAuthor($this->currentUser->getUID());
+                $event->setAuthor($currentUserID);
             }
         } catch (\InvalidArgumentException $e) {
             $this->logger->logException($e);
         }
 
-        // Add activity to stream
-        if (true) {
-            $res = $this->activityData->send($event);
+        // Add activity to stream to the user
+        $res = $this->activityData->send($event);
+        if (!$res) {
+            return false;
+        }
+
+        // check up if confirmed file is placed in group folder
+        $groupFolderID = $this->groupFolderManager->getGroupFolderIDByFilePath($path);
+
+        if ($groupFolderID > 0) {
+
+            // get assigned user groups to the group folder
+            $assignedGroups = $this->groupFolderManager->getAssignedGroupsIdsToGroupFolderId($groupFolderID);
+
+            // save activity to each user from assigned user group(s) for group folder
+            if (is_array($assignedGroups) && count($assignedGroups)) {
+
+                foreach ($assignedGroups as $assignedGroupName) {
+
+                    // get all users in user group
+                    $usersInGroup = $this->groupManager->get($assignedGroupName)->getUsers();
+
+                    if (is_array($usersInGroup) && count($usersInGroup)) {
+                        foreach ($usersInGroup as $user) {
+
+                            if ($user->getUID() == $currentUserID) {
+                                continue;
+                            }
+
+                            try {
+                                $event = $this->activityManager->generateEvent();
+                                $event->setApp($app)
+                                    ->setType($type)
+                                    ->setAffectedUser($user->getUID())
+                                    ->setTimestamp(time())
+                                    ->setSubject($subject, $subjectParams)
+                                    ->setObject($objectType, $fileId, $path)
+                                    ->setLink($link);
+
+                                if ($currentUserID !== null) {
+                                    // Allow this to be empty for guests
+                                    $event->setAuthor($currentUserID);
+                                }
+                                $this->activityManager->publish($event);
+                            } catch (\InvalidArgumentException $e) {
+                                $this->logger->logException($e, [
+                                    'app' => 'files_gf_trackdownloads',
+                                ]);
+                            } catch (\BadMethodCallException $e) {
+                                $this->logger->logException($e, [
+                                    'app' => 'files_gf_trackdownloads',
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -154,8 +217,6 @@ class ActivityService
     {
         // current timestamp
         $timeStamp = time();
-
-        $userID = $this->currentUser->getUID();
 
         // save activity to each user from assigned user group(s) for group folder
         if (is_array($assignedGroups) && count($assignedGroups)) {
@@ -170,7 +231,7 @@ class ActivityService
                             $event = $this->activityManager->generateEvent();
                             $event->setApp('files_gf_trackdownloads')
                                 ->setType('file_gf')
-                                ->setAffectedUser($userID)
+                                ->setAffectedUser($user)
                                 //->setAuthor($this->currentUser->getUID())
                                 ->setTimestamp($timeStamp)
                                 ->setSubject($subject, $subjectParams)

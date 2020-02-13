@@ -104,6 +104,9 @@ class FileService
             $this->activityService->saveFileConfirmationToActivity($fileID);
         }
 
+        // debug
+        $error++;
+
         $response = [
             'error' => $error,
             'error_msg' => $error_msg
