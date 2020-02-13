@@ -247,7 +247,7 @@ class ActivityService
                             $event = $this->activityManager->generateEvent();
                             $event->setApp('files_gf_trackdownloads')
                                 ->setType('file_gf')
-                                ->setAffectedUser($user)
+                                ->setAffectedUser($user->getUID())
                                 //->setAuthor($this->currentUser->getUID())
                                 ->setTimestamp($timeStamp)
                                 ->setSubject($subject, $subjectParams)
