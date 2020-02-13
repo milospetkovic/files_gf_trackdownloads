@@ -45,7 +45,7 @@ class Application extends App
     }
 
     /**
-     * Methods executes listener when user downloads a file
+     * Listener when user downloads a file
      *
      * @param array $params
      */
