@@ -1,26 +1,25 @@
 {
-  "name": "vueexample",
-  "description": "A simple Nextcloud app using vue-components",
-  "version": "4.0.0",
+  "name": "vue",
+  "description": "Nextcloud plugin using vue-components",
+  "version": "1.0.0",
   "author": "John Molakvoæ <skjnldsv@protonmail.com>",
   "contributors": [
-    "John Molakvoæ <skjnldsv@protonmail.com>"
   ],
   "keywords": [
     "nextcloud",
-    "vueexample",
+    "vue",
     "app",
     "dev",
     "vuejs"
   ],
   "bugs": {
-    "url": "https://github.com/skjnldsv/vueexample/issues"
+    "url": "https://github.com/milospetkovic/files_gf_trackdownloads"
   },
   "repository": {
-    "url": "https://github.com/skjnldsv/vueexample",
+    "url": "https://github.com/milospetkovic/files_gf_trackdownloads",
     "type": "git"
   },
-  "homepage": "https://github.com/skjnldsv/vueexample",
+  "homepage": "https://github.com/milospetkovic/files_gf_trackdownloads",
   "license": "agpl",
   "private": true,
   "scripts": {

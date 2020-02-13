@@ -18,6 +18,8 @@
  *
  */
 
+import Vue from 'vue';
+
 (function (OCA) {
 
     OCA.FilesGFTrackDownloads = _.extend({

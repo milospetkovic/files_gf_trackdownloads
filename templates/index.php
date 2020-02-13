@@ -1,4 +1,5 @@
 <?php
+script('files_gf_trackdownloads', 'main');
 style('files_gf_trackdownloads', 'style');
 style('files_gf_trackdownloads', 'bootstrap/bootstrap.edit');
 ?>

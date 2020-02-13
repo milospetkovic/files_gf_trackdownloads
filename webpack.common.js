@@ -8,7 +8,7 @@ const config = {
 	output: {
 		path: path.resolve(__dirname, './js'),
 		publicPath: '/js/',
-		filename: `vueexample.js`,
+		filename: `main.js`,
 		chunkFilename: 'chunks/[name]-[hash].js',
 	},
 	module: {
