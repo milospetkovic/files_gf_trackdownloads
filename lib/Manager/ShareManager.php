@@ -150,7 +150,7 @@ class ShareManager
         $cursor->closeCursor();
 
         if ($data === false) {
-            throw new ShareNotFound;
+            //throw new ShareNotFound;
         }
 
         return $data;
@@ -224,7 +224,7 @@ class ShareManager
         $cursor->closeCursor();
 
         if ($data === false) {
-            throw new ShareNotFound;
+            //throw new ShareNotFound;
         }
 
         return $data;

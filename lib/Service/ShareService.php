@@ -203,9 +203,9 @@ class ShareService
         if ((is_array($getShareRecordForUser))) {
             return $this->confirm($getShareRecordForUser['id']);
         }
-        return false;
-
-
+        return json_encode([
+            'error' => 1,
+            'error_msg' => $this->l->t('Shared file is not found or it is not shared with you')]);
     }
 
 }
