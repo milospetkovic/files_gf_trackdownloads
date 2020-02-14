@@ -11,6 +11,6 @@ return [
     'routes' => [
         [ 'name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
         [ 'name' => 'action#confirm', 'url' => 'ajax/confirm.php', 'verb' => 'POST' ],
-        [ 'name' => 'action#confirmSelectedFiles', 'url' => 'ajax/confirmSelectedFiles.php', 'verb' => 'POST' ]
+        [ 'name' => 'action#confirmSelectedSharedFiles', 'url' => 'ajax/confirmSelectedSharedFiles.php', 'verb' => 'POST' ]
     ]
 ];

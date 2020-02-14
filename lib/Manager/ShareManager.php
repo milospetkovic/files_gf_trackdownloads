@@ -22,8 +22,11 @@
 namespace OCA\FilesGFTrackDownloads\Manager;
 
 
+use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\IL10N;
+use OCP\Share\Exceptions\ShareNotFound;
 
 class ShareManager
 {
@@ -35,16 +38,23 @@ class ShareManager
      * @var IL10N
      */
     private $l;
+    /**
+     * @var ITimeFactory
+     */
+    private $timeFactory;
 
     /**
      * ShareManager constructor.
      * @param IDBConnection $connection
      * @param IL10N $l
      */
-    public function __construct(IDBConnection $connection, IL10N $l)
+    public function __construct(IDBConnection $connection,
+                                IL10N $l,
+                                ITimeFactory $timeFactory)
     {
         $this->connection = $connection;
         $this->l = $l;
+        $this->timeFactory = $timeFactory;
     }
 
     /**
@@ -114,10 +124,78 @@ class ShareManager
             ->from('share', 'sh')
             ->where($query->expr()->eq('sh.share_with', $query->createNamedParameter($userID)))
             ->andWhere($query->expr()->isNotNull('sh.expiration'))
-            ->andWhere($query->expr()->isNull('fc.file_confirmed'))
+            ->andWhere($query->expr()->isNull('sh.elb_confirmed'))
             ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'));
 
         return $query->execute()->fetchAll();
+    }
+
+    /**
+     * Get share record by share id
+     *
+     * @param $id
+     * @return mixed
+     * @throws ShareNotFound
+     */
+    public function getRawShare($id)
+    {
+        $qb = $this->connection->getQueryBuilder();
+        $qb->select('*')
+            ->from('share')
+            ->where($qb->expr()->eq('id', $qb->createNamedParameter($id)));
+
+        $cursor = $qb->execute();
+        $data = $cursor->fetch();
+        $cursor->closeCursor();
+
+        if ($data === false) {
+            throw new ShareNotFound;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Check up if shared file is confirmed
+     *
+     * @param $shareID
+     * @return mixed|null
+     */
+    public function checkUpIfFileOrFolderIsAlreadyConfirmed($shareID)
+    {
+        $ret = null;
+
+        if ($shareID) {
+
+            $query = $this->connection->getQueryBuilder();
+
+            $query->select('elb_confirmed')
+                ->from('share')
+                ->where($query->expr()->eq('id', $query->createNamedParameter($shareID)));
+
+            $fetchRes = $query->execute()->fetch();
+
+            if (is_array($fetchRes) && count($fetchRes)) {
+                return $fetchRes['elb_confirmed'];
+            }
+        }
+        return $ret;
+    }
+
+    /**
+     * Mark shared file as confirmed
+     *
+     * @param $fileID
+     * @return \Doctrine\DBAL\Driver\Statement|int
+     */
+    public function markSharedFileIDAsConfirmed($shareID)
+    {
+        $query = $this->connection->getQueryBuilder();
+
+        $query->update('share')
+            ->set('elb_confirmed', $query->createNamedParameter($this->timeFactory->getTime()))
+            ->where($query->expr()->eq('id', $query->createNamedParameter($shareID, IQueryBuilder::PARAM_INT)));
+        return $query->execute();
     }
 
 }

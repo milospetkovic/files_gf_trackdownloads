@@ -117,7 +117,7 @@ class CalendarManager
                  LEFT JOIN `*PREFIX*filecache` as fc on `fc`.`fileid`=`sh`.`file_source` 
                  WHERE `sh`.`elb_calendar_object_id` is null 
                  AND `sh`.`expiration` is NOT null
-                 and `fc`.`file_confirmed` is null'
+                 and `sh`.`elb_confirmed` is null'
         );
         $stmt->execute();
 

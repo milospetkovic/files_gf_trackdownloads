@@ -40,7 +40,8 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
                                 <?php foreach($_['data'] as $ind => $data) { ?>
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="fileid[]" class="fileid" v-model="selectedFiles" value="<?php echo $data['fileid'] ?>" />
+                                            <?php // @TODO - replace name/class fileid with share id since logic has been changed ?>
+                                            <input type="checkbox" name="fileid[]" class="fileid" v-model="selectedFiles" value="<?php echo $data['id'] ?>" />
                                         </td>
                                         <td><?php echo $data['uid_initiator'] ?></td>
                                         <td><?php echo DateTimeUtility::convertTimestampToUserFriendlyDateTime($data['stime']) ?></td>

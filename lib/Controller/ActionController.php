@@ -22,6 +22,7 @@
 namespace OCA\FilesGFTrackDownloads\Controller;
 
 use OCA\FilesGFTrackDownloads\Service\FileService;
+use OCA\FilesGFTrackDownloads\Service\ShareService;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
@@ -37,19 +38,23 @@ class ActionController extends Controller
      * @var FileService
      */
     private $fileService;
+    /**
+     * @var ShareService
+     */
+    private $shareService;
 
     public function __construct(IConfig $config,
                                 $AppName,
                                 IRequest $request,
                                 string $UserId,
                                 IL10N $l,
-                                FileService $fileService)
+                                ShareService $shareService)
     {
         parent::__construct($AppName, $request);
-        $this->fileService = $fileService;
         $this->config = $config;
         $this->UserId = $UserId;
         $this->l = $l;
+        $this->shareService = $shareService;
     }
 
     /**
@@ -60,7 +65,7 @@ class ActionController extends Controller
      */
     public function confirm($fileID)
     {
-        return $this->fileService->confirm($fileID);
+        return $this->shareService->confirm($fileID);
     }
 
     /**
@@ -69,9 +74,9 @@ class ActionController extends Controller
      * @param $files
      * @return false|string
      */
-    public function confirmSelectedFiles($files)
+    public function confirmSelectedSharedFiles($files)
     {
-        return $this->fileService->confirmSelectedFiles($files);
+        return $this->shareService->confirmSelectedSharedFiles($files);
     }
 
 }

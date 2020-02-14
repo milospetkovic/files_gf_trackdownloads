@@ -26,7 +26,6 @@ use OCP\IDBConnection;
 
 class FileCacheManager
 {
-    const FILE_IS_CONFIRMED = 1;
 
     /**
      * @var IDBConnection
@@ -42,47 +41,6 @@ class FileCacheManager
         $this->connection = $connection;
     }
 
-    /**
-     * Check up if file is confirmed
-     *
-     * @param $fileCacheID
-     * @return mixed|null
-     */
-    public function checkUpIfFileOrFolderIsAlreadyConfirmed($fileCacheID)
-    {
-        $ret = null;
 
-        if ($fileCacheID) {
-
-            $query = $this->connection->getQueryBuilder();
-
-            $query->select('file_confirmed')
-                ->from('filecache')
-                ->where($query->expr()->eq('fileid', $query->createNamedParameter($fileCacheID)));
-
-            $fetchRes = $query->execute()->fetch();
-
-            if (is_array($fetchRes) && count($fetchRes)) {
-                return $fetchRes['file_confirmed'];
-            }
-        }
-        return $ret;
-    }
-
-    /**
-     * Mark file as confirmed
-     *
-     * @param $fileID
-     * @return \Doctrine\DBAL\Driver\Statement|int
-     */
-    public function markFileIDAsConfirmed($fileID)
-    {
-        $query = $this->connection->getQueryBuilder();
-
-        $query->update('filecache')
-            ->set('file_confirmed', $query->createNamedParameter(self::FILE_IS_CONFIRMED))
-            ->where($query->expr()->eq('fileid', $query->createNamedParameter($fileID, IQueryBuilder::PARAM_INT)));
-        return $query->execute();
-    }
 
 }
