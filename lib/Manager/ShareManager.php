@@ -22,6 +22,7 @@
 namespace OCA\FilesGFTrackDownloads\Manager;
 
 
+use Doctrine\DBAL\Driver\Statement;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
@@ -185,8 +186,9 @@ class ShareManager
     /**
      * Mark shared file as confirmed
      *
-     * @param $fileID
-     * @return \Doctrine\DBAL\Driver\Statement|int
+     * @param $shareID
+     * @return Statement|int
+     * @throws \Exception
      */
     public function markSharedFileIDAsConfirmed($shareID)
     {
@@ -200,5 +202,34 @@ class ShareManager
             ->where($query->expr()->eq('id', $query->createNamedParameter($shareID, IQueryBuilder::PARAM_INT)));
         return $query->execute();
     }
+
+    /**
+     * Get share record for user and file id
+     *
+     * @param $userID
+     * @param $fileID
+     * @return mixed
+     * @throws ShareNotFound
+     */
+    public function getShareRecordForUserAndForFileID($userID, $fileID)
+    {
+        $qb = $this->connection->getQueryBuilder();
+        $qb->select('*')
+            ->from('share')
+            ->where($qb->expr()->eq('file_source', $qb->createNamedParameter($fileID)))
+            ->andWhere($qb->expr()->eq('share_with', $qb->createNamedParameter($userID)));
+
+        $cursor = $qb->execute();
+        $data = $cursor->fetch();
+        $cursor->closeCursor();
+
+        if ($data === false) {
+            throw new ShareNotFound;
+        }
+
+        return $data;
+    }
+
+
 
 }

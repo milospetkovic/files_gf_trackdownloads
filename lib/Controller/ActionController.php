@@ -65,7 +65,7 @@ class ActionController extends Controller
      */
     public function confirm($fileID)
     {
-        return $this->shareService->confirm($fileID);
+        return $this->shareService->confirmSharedFileByFileID($fileID);
     }
 
     /**
