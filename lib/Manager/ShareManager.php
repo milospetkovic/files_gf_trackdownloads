@@ -192,8 +192,11 @@ class ShareManager
     {
         $query = $this->connection->getQueryBuilder();
 
+        $now = new \DateTime();
+        $nowFormat = $now->format('Y-m-d H:i:s');
+
         $query->update('share')
-            ->set('elb_confirmed', $query->createNamedParameter($this->timeFactory->getTime()))
+            ->set('elb_confirmed', $query->createNamedParameter($nowFormat))
             ->where($query->expr()->eq('id', $query->createNamedParameter($shareID, IQueryBuilder::PARAM_INT)));
         return $query->execute();
     }
