@@ -79,6 +79,15 @@ class ActivityService
     private $groupManager;
 
     /**
+     * populate array to avoid saving to user's activity
+     * if activity is already saved for the user
+     * (case when one use is placed in more than one user group)
+     *
+     * @var array
+     */
+    private $activitySavedForUserID = [];
+
+    /**
      * ActivityService constructor.
      * @param IManager $activityManager
      * @param IDBConnection $connection
@@ -126,6 +135,8 @@ class ActivityService
         $app = 'files_gf_trackdownloads';
         $type = $this->activitySetting->getIdentifier();
 
+        $this->resetActivitySavedForUserID();
+
         $currentUserID = $this->currentUser->getUID();
 
         $subject = Provider::SUBJECT_GF_FILE_CONFIRMED;
@@ -164,6 +175,8 @@ class ActivityService
             return false;
         }
 
+        $this->activitySavedForUserID[] = $currentUserID;
+
         // check up if confirmed file is placed in group folder
         $groupFolderID = $this->groupFolderManager->getGroupFolderIDByFilePath($path);
 
@@ -183,9 +196,11 @@ class ActivityService
                     if (is_array($usersInGroup) && count($usersInGroup)) {
                         foreach ($usersInGroup as $user) {
 
-                            if ($user->getUID() == $currentUserID) {
+                            if (in_array($user->getUID(), $this->activitySavedForUserID)) {
                                 continue;
                             }
+
+                            $this->activitySavedForUserID[] = $user->getUID();
 
                             try {
                                 $event = $this->activityManager->generateEvent();
@@ -234,6 +249,8 @@ class ActivityService
         // current timestamp
         $timeStamp = time();
 
+        $this->resetActivitySavedForUserID();
+
         // save activity to each user from assigned user group(s) for group folder
         if (is_array($assignedGroups) && count($assignedGroups)) {
             foreach ($assignedGroups as $assignedGroupName) {
@@ -243,6 +260,13 @@ class ActivityService
 
                 if (is_array($usersInGroup) && count($usersInGroup)) {
                     foreach ($usersInGroup as $user) {
+
+                        if (in_array($user->getUID(), $this->activitySavedForUserID)) {
+                            continue;
+                        }
+
+                        $this->activitySavedForUserID[] = $user->getUID();
+
                         try {
                             $event = $this->activityManager->generateEvent();
                             $event->setApp('files_gf_trackdownloads')
@@ -267,6 +291,11 @@ class ActivityService
                 }
             }
         }
+    }
+
+    private function resetActivitySavedForUserID()
+    {
+        $this->activitySavedForUserID = [];
     }
 
 }
