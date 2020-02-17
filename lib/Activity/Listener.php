@@ -36,6 +36,7 @@ use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\IGroupManager;
 use OCA\FilesGFTrackDownloads\Manager\GroupFolderManager;
+use OCP\IConfig;
 
 class Listener
 {
@@ -59,6 +60,8 @@ class Listener
      * @var ActivityService
      */
     private $activityService;
+    /** @var IConfig */
+    protected $config;
 
     /**
      * @param IRequest $request
@@ -68,7 +71,9 @@ class Listener
      * @param CurrentUser $currentUser
      * @param ILogger $logger
      * @param IGroupManager $groupManager
-     * @param FolderManager $groupFolderManager
+     * @param GroupFolderManager $groupFolderManager
+     * @param ActivityService $activityService
+     * @param IConfig $config
      */
     public function __construct(IRequest $request,
                                 IManager $activityManager,
@@ -78,7 +83,8 @@ class Listener
                                 ILogger $logger,
                                 IGroupManager $groupManager,
                                 GroupFolderManager $groupFolderManager,
-                                ActivityService $activityService)
+                                ActivityService $activityService,
+                                IConfig $config)
     {
         $this->request = $request;
         $this->activityManager = $activityManager;
@@ -89,6 +95,7 @@ class Listener
         $this->groupManager = $groupManager;
         $this->groupFolderManager = $groupFolderManager;
         $this->activityService = $activityService;
+        $this->config = $config;
     }
 
     /**
@@ -107,9 +114,12 @@ class Listener
             $assignedGroups = $this->groupFolderManager->getAssignedGroupsIdsToGroupFolderId($groupFolderID);
 
             // add super admin user group (in case if admin user group is not assigned to the group folder)
-            $defaultAdminGroup = 'admin';
-            if (!in_array($defaultAdminGroup, $assignedGroups)) {
-                $assignedGroups[] = $defaultAdminGroup;
+            // this option can be disabled by setting avoid_save_activity_for_admin_group in config.php to true
+            if (!$this->config->getSystemValue('avoid_save_activity_for_admin_group')) {
+                $defaultAdminGroup = 'admin';
+                if (!in_array($defaultAdminGroup, $assignedGroups)) {
+                    $assignedGroups[] = $defaultAdminGroup;
+                }
             }
 
             // Do not add activities for .part-files
