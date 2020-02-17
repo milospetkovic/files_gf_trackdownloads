@@ -157,29 +157,39 @@ class CalendarManager
     public function createCalendarEvent($calendarID, $shareData)
     {
         // uuid for .ics
-        $uri = strtoupper(UUIDUtil::getUUID()).'.ics';
+        $calDataUri[0] = strtoupper(UUIDUtil::getUUID()) . '.ics';
 
         $userInitiatorForShare = $shareData['uid_initiator'];
 
         $shareTarget = trim($shareData['file_target'], '/');
 
+        $currentTimeFormat = date('Ymd');
+
         // the datetime when calendar event object is created
         $createdDateTime = date('Ymd\THis\Z');
 
+        // the start date time of calendar event
+        $startDateTimeOfEvent = $createdDateTime;
+
         // uuid for calendar object itself
-        $calObjectUUID = strtolower(UUIDUtil::getUUID());
+        $calObjectUUID[0] = strtolower(UUIDUtil::getUUID());
 
         // the name for calendar event
         $eventSummaryRaw = $this->l->t("User {user} shared {file} with you");
         $eventSummary = $this->translateSharedFileCalenderEvent($eventSummaryRaw, ['user' => $userInitiatorForShare, 'file' => $shareTarget]);
 
-        // set end datetime of calendar event depending on date set in share expiration field
-        $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($shareData['expiration']));
+        // the end datetime of calendar event
+        $endDateTimeOfEvent = $startDateTimeOfEvent;
+
+        $endDateTimeFormat = date('Ymd', strtotime($shareData['expiration']));
+
+        // check up if event should be splited
+        $splitEvent = $currentTimeFormat < $endDateTimeFormat;
 
         $timeZone = 'Europe/Belgrade';
 
-        // populate calendar event with data
-        $calData = <<<EOD
+        // populate start calendar event with data
+        $calData[0] = <<<EOD
 BEGIN:VCALENDAR
 PRODID:-//IDN nextcloud.com//Calendar app 2.0.1//EN
 CALSCALE:GREGORIAN
@@ -189,8 +199,8 @@ CREATED:$createdDateTime
 DTSTAMP:$createdDateTime
 LAST-MODIFIED:$createdDateTime
 SEQUENCE:2
-UID:$calObjectUUID
-DTSTART;TZID=$timeZone:$createdDateTime
+UID:$calObjectUUID[0]
+DTSTART;TZID=$timeZone:$startDateTimeOfEvent
 DTEND;TZID=$timeZone:$endDateTimeOfEvent
 LAST-MODIFIED;VALUE=DATE-TIME:$createdDateTime
 DTSTAMP;VALUE=DATE-TIME:$createdDateTime
@@ -216,21 +226,87 @@ END:VTIMEZONE
 END:VCALENDAR
 EOD;
 
+        // the second event for the same file (the last date reminder)
+        if ($splitEvent) {
+
+            $calDataUri[1] = strtoupper(UUIDUtil::getUUID()) . '.ics';
+
+            // uuid for calendar object itself
+            $calObjectUUID[1] = strtolower(UUIDUtil::getUUID());
+
+            // the start date time of calendar event
+            $lastEventDateTime = date('Y-m-d 09:i:s', strtotime($shareData['expiration']));
+
+            $startDateTimeOfEvent = $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($lastEventDateTime));;
+
+            // populate end calendar event with data
+            $calData[1] = <<<EOD
+BEGIN:VCALENDAR
+PRODID:-//IDN nextcloud.com//Calendar app 2.0.1//EN
+CALSCALE:GREGORIAN
+VERSION:2.0
+BEGIN:VEVENT
+CREATED:$createdDateTime
+DTSTAMP:$createdDateTime
+LAST-MODIFIED:$createdDateTime
+SEQUENCE:2
+UID:$calObjectUUID[1]
+DTSTART;TZID=$timeZone:$startDateTimeOfEvent
+DTEND;TZID=$timeZone:$endDateTimeOfEvent
+LAST-MODIFIED;VALUE=DATE-TIME:$createdDateTime
+DTSTAMP;VALUE=DATE-TIME:$createdDateTime
+SUMMARY:$eventSummary
+END:VEVENT
+BEGIN:VTIMEZONE
+TZID:$timeZone
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
+END:VCALENDAR
+EOD;
+        }
+
         $calendarType = CalDavBackend::CALENDAR_TYPE_CALENDAR;
 
-        // call method which executes creating calendar event
-        $response = $this->calDavBackend->createCalendarObject($calendarID, $uri, $calData, $calendarType);
+        // call method which executes creating calendar event(s)
+        foreach ($calData as $ind => $calEventData) {
 
-        if (strlen($response)) {
-            // fetch newly created calendar event
-            $event = $this->calDavBackend->getCalendarObject($calendarID, $uri, $calendarType);
-            if (is_array($event)) {
-                $eventID = $event['id'];
-                return $this->setCalendarEventIdToTheShareRecord($shareData['id'], $eventID);
+            $response = $this->calDavBackend->createCalendarObject($calendarID, $calDataUri[$ind], $calEventData, $calendarType);
+
+            if (strlen($response)) {
+
+                // save the latest calendar event id to the share record
+                // in case when there's only the start event (confirmation is shared for current day)
+                // then the start event id will be saved to the share record
+                if (count($calData) == ($ind + 1)) {
+                    // fetch newly created calendar event
+                    $event = $this->calDavBackend->getCalendarObject($calendarID, $calDataUri[$ind], $calendarType);
+                    if (is_array($event)) {
+                        $eventID = $event['id'];
+                        $res = $this->setCalendarEventIdToTheShareRecord($shareData['id'], $eventID);
+                        if (!$res) {
+                            return false; // error during saving cal. event id to the share record
+                        }
+                    }
+                }
+            } else {
+                return false; // error during saving cal. event
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
