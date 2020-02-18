@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-import Vue from 'vue'
+// import Vue from 'vue'
 import $ from 'jquery'
 
 (function(OCA) {
@@ -87,8 +87,9 @@ import $ from 'jquery'
 
 })(OCA)
 
+/*
 const vm = new Vue({
-	el: '#apaap-fgft',
+	el: '#app-fgft',
 	data: {
 		selectedFiles: [],
 		allSelected: false,
@@ -139,3 +140,4 @@ const vm = new Vue({
 })
 
 export default vm
+*/

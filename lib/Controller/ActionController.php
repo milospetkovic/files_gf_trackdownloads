@@ -59,6 +59,7 @@ class ActionController extends Controller
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      *
      * @param $fileID
      * @return false|string
@@ -70,6 +71,7 @@ class ActionController extends Controller
 
     /**
      * @NoAdminRequired
+     * @NoCSRFRequired
      *
      * @param $files
      * @return false|string

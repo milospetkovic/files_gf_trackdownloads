@@ -35,7 +35,7 @@ $eventDispatcher = \OC::$server->getEventDispatcher();
 //\OCP\Util::addScript('files_gf_trackdownloads', 'script');
 //});
 
-/*foreach ($includes as $app => $include) {
+foreach ($includes as $app => $include) {
     $eventDispatcher->addListener(
         'OCA\\'.$app.'::loadAdditionalScripts',
         function () use ($include) {
@@ -45,4 +45,4 @@ $eventDispatcher = \OC::$server->getEventDispatcher();
             //\OCP\Util::addStyle('files_gf_trackdownloads', 'bootstrap.min');
         }
     );
-}*/
+}
