@@ -1,7 +1,8 @@
 <?php
-script('files_gf_trackdownloads', 'vue/dist/vue');
-script('files_gf_trackdownloads', 'script');
+//script('files_gf_trackdownloads', 'vue/dist/vue');
+//script('files_gf_trackdownloads', 'script');
 //script('files_gf_trackdownloads', 'main');
+script('files_gf_trackdownloads', 'vueexample');
 style('files_gf_trackdownloads', 'style');
 style('files_gf_trackdownloads', 'bootstrap/bootstrap.edit');
 ?>

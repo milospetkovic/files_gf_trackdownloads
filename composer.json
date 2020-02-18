@@ -1,15 +1,12 @@
 {
-    "name": "Files In Group Folder Track Downloads",
-    "description": "Activities for file downloads in group folders",
-    "type": "project",
-    "license": "AGPL",
-    "authors": [
-        {
-            "name": "Milos Petkovic"
-        }
-    ],
-    "require": {},
-    "require-dev": {
-        "phpunit/phpunit": "^5.4"
+    "name": "skjnldsv/vueexample",
+    "description": "Lint config for skjnldsv/vueexample",
+    "license": "MIT",
+    "config": {
+        "optimize-autoloader": true,
+        "classmap-authoritative": true
+    },
+    "scripts": {
+        "lint": "find . -name \\*.php -not -path './vendor/*' -exec php -l \"{}\" \\;"
     }
 }

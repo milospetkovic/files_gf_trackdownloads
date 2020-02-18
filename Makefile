@@ -1,4 +1,4 @@
-all: dev-setup lint build-js-production test
+all: dev-setup build-js-production test
 
 # Dev env management
 dev-setup: clean clean-dev npm-init
@@ -28,20 +28,6 @@ test-watch:
 
 test-coverage:
 	npm run test:coverage
-
-# Linting
-lint:
-	npm run lint
-
-lint-fix:
-	npm run lint:fix
-
-# Style linting
-stylelint:
-	npm run stylelint
-
-stylelint-fix:
-	npm run stylelint:fix
 
 # Cleaning
 clean:

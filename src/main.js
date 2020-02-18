@@ -1,5 +1,7 @@
 /**
- * @copyright Copyright (c) 2020 Milos Petkovic <milos.petkovic@elb-solutions.com>
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -14,137 +16,126 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+import Vue from 'vue'
+import $ from 'jquery'
 
-import Vue from 'vue';
+(function(OCA) {
 
-(function (OCA) {
+	OCA.FilesGFTrackDownloads = {
+		AppName: 'files_gf_trackdownloads',
+		context: null,
+		folderUrl: null,
+	}
 
-    OCA.FilesGFTrackDownloads = _.extend({
-        AppName: "files_gf_trackdownloads",
-        context: null,
-        folderUrl: null
-    }, OCA.FilesGFTrackDownloads);
+	OCA.FilesGFTrackDownloads.MarkAsConfirmed = function(filename, context) {
 
-    OCA.FilesGFTrackDownloads.MarkAsConfirmed = function (filename, context) {
+		const fileID = context.fileInfoModel.id
 
-        var fileID = context.fileInfoModel.id;
+		const data = {
+			fileID: fileID,
+		}
 
-        var data = {
-            fileID: fileID
-        };
+		// set table row of file/folder as busy
+		const tr = context.fileList.findFileEl(filename)
+		context.fileList.showFileBusyState(tr, true)
 
-        // set table row of file/folder as busy
-        var tr = context.fileList.findFileEl(filename);
-        context.fileList.showFileBusyState(tr, true);
+		$.ajax({
+			url: OC.filePath('files_gf_trackdownloads', 'ajax', 'confirm.php'),
+			type: 'POST',
+			data: data,
+			success: function(element) {
 
-        $.ajax({
-            url: OC.filePath('files_gf_trackdownloads', 'ajax','confirm.php'),
-            type: 'POST',
-            data: data,
-            success: function(element) {
+				// set table row of file/folder as busy
+				context.fileList.showFileBusyState(tr, false)
 
-                // set table row of file/folder as busy
-                context.fileList.showFileBusyState(tr, false);
+				// parse respone to json format
+				const response = JSON.parse(element)
 
-                // parse respone to json format
-                var response = JSON.parse(element);
+				if (!response.error) {
+					context.fileList.reload()
+				} else {
+					OC.dialogs.alert(
+						t('filesgfdownloadactivity', response.error_msg),
+						t('filesgfdownloadactivity', 'Error'),
+					)
+				}
+			},
+		})
+	}
 
-                if (!response.error) {
-                    context.fileList.reload();
-                } else {
-                    OC.dialogs.alert(
-                        t('filesgfdownloadactivity', response.error_msg),
-                        t('filesgfdownloadactivity', 'Error')
-                    );
-                }
-            }
-        });
-    };
+	OCA.FilesGFTrackDownloads.FileList = {
+		attach: function(fileList) {
+			fileList.fileActions.registerAction({
+				name: 'confirmobject',
+				displayName: t('filesgfdownloadactivity', 'Confirm'),
+				mime: 'all',
+				permissions: OC.PERMISSION_READ,
+				iconClass: 'icon-fgft-confirmation',
+				actionHandler: OCA.FilesGFTrackDownloads.MarkAsConfirmed,
+			})
+		},
+	}
 
-    OCA.FilesGFTrackDownloads.setting = {};
+	const initPage = function() {
+		OC.Plugins.register('OCA.Files.FileList', OCA.FilesGFTrackDownloads.FileList)
+	}
 
-    OCA.FilesGFTrackDownloads.GetSettings = function (callbackSettings) {
-        $.get(OC.generateUrl("apps/" + OCA.FilesGFTrackDownloads.AppName + "/ajax/settings"),
-            function onSuccess(settings) {
-                OCA.FilesGFTrackDownloads.setting = settings;
-                callbackSettings();
-            }
-        );
-    };
+	$(document).ready(initPage)
 
-    OCA.FilesGFTrackDownloads.FileList = {
-        attach: function (fileList) {
-            fileList.fileActions.registerAction({
-                name: "confirmobject",
-                displayName: t("filesgfdownloadactivity", "Confirm"),
-                mime: 'all',
-                permissions: OC.PERMISSION_READ,
-                iconClass: "icon-fgft-confirmation",
-                actionHandler: OCA.FilesGFTrackDownloads.MarkAsConfirmed
-            });
-        }
-    };
+})(OCA)
 
-    var initPage = function () {
-        OC.Plugins.register("OCA.Files.FileList", OCA.FilesGFTrackDownloads.FileList);
-    };
+const vm = new Vue({
+	el: '#apaap-fgft',
+	data: {
+		selectedFiles: [],
+		allSelected: false,
+	},
+	methods: {
+		selectOrUnselectAll() {
+			this.selectedFiles = []
+			if (!this.allSelected) {
+				const vueInstance = this
+				$('.table-unconfirmed-files .fileid').each(function(i, el) {
+					vueInstance.selectedFiles.push(el.val())
+				})
+			}
+		},
+		confirmSelectedFiles() {
+			if (confirm(t('filesgfdownloadactivity', 'Are you sure you want to confirm selected files?'))) {
 
-    $(document).ready(initPage);
+				const vueInstance = this
 
-})(OCA);
+				const data = {
+					files: vueInstance.selectedFiles,
+				}
 
-var vm = new Vue({
-    el: "#app-fgft",
-    data: {
-        selectedFiles: [],
-        allSelected: false,
-    },
-    methods: {
-        selectOrUnselectAll() {
-            this.selectedFiles = [];
-            if (!this.allSelected) {
-                var vueInstance = this;
-                $('.table-unconfirmed-files .fileid').each(function(i, el) {
-                    vueInstance.selectedFiles.push($(el).val());
-                });
-            }
-        },
-        confirmSelectedFiles() {
-            if (confirm(t('filesgfdownloadactivity', 'Are you sure you want to confirm selected files?'))) {
+				$.ajax({
+					url: OC.filePath('files_gf_trackdownloads', 'ajax', 'confirmSelectedSharedFiles.php'),
+					type: 'POST',
+					data: data,
+					success: function(element) {
 
-                var vueInstance = this;
+						// parse respone to json format
+						const response = JSON.parse(element)
 
-                var data = {
-                    files: vueInstance.selectedFiles
-                };
+						if (!response.error) {
+							location.reload()
+						} else {
+							OC.dialogs.alert(
+								t('filesgfdownloadactivity', response.error_msg),
+								t('filesgfdownloadactivity', 'Error')
+							)
+						}
+					},
+				})
+			} else {
+				return false
+			}
+		},
+	},
+})
 
-                console.log('data', data);
-
-                $.ajax({
-                    url: OC.filePath('files_gf_trackdownloads', 'ajax','confirmSelectedFiles.php'),
-                    type: 'POST',
-                    data: data,
-                    success: function(element) {
-
-                        // parse respone to json format
-                        var response = JSON.parse(element);
-
-                        if (!response.error) {
-                            location.reload();
-                        } else {
-                            OC.dialogs.alert(
-                                t('filesgfdownloadactivity', response.error_msg),
-                                t('filesgfdownloadactivity', 'Error')
-                            );
-                        }
-                    }
-                });
-            } else {
-                return false;
-            }
-        }
-    }
-});
+export default vm

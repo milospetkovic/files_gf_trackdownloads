@@ -29,18 +29,20 @@ $includes = [
 
 $eventDispatcher = \OC::$server->getEventDispatcher();
 
+\OCP\Util::addScript('files_gf_trackdownloads', 'vueexample');
+
 //$eventDispatcher->addListener(\OCP\AppFramework\Http\TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS_LOGGEDIN, function() {
 //\OCP\Util::addScript('files_gf_trackdownloads', 'script');
 //});
 
-foreach ($includes as $app => $include) {
+/*foreach ($includes as $app => $include) {
     $eventDispatcher->addListener(
         'OCA\\'.$app.'::loadAdditionalScripts',
         function () use ($include) {
-            \OCP\Util::addScript('files_gf_trackdownloads', 'script');
+            \OCP\Util::addScript('files_gf_trackdownloads', 'vueexample');
             \OCP\Util::addScript('files_gf_trackdownloads', $include);
             \OCP\Util::addStyle('files_gf_trackdownloads', 'style');
             //\OCP\Util::addStyle('files_gf_trackdownloads', 'bootstrap.min');
         }
     );
-}
+}*/
