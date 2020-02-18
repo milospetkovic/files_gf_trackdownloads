@@ -22,19 +22,20 @@
 $application = new \OCA\FilesGFTrackDownloads\AppInfo\Application();
 $application->register();
 
-$includes = [
-    'Files' => 'files',
-    'Files_Sharing' => 'files',
-];
-
 $eventDispatcher = \OC::$server->getEventDispatcher();
 
-\OCP\Util::addScript('files_gf_trackdownloads', 'vueexample');
+//\OCP\Util::addScript('files_gf_trackdownloads', 'vueexample');
 
 //$eventDispatcher->addListener(\OCP\AppFramework\Http\TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS_LOGGEDIN, function() {
 //\OCP\Util::addScript('files_gf_trackdownloads', 'script');
 //});
 
+$includes = [
+    'Files' => 'files',
+    'Files_Sharing' => 'files',
+];
+
+// pages where additionalal javascript/css should be inserted
 foreach ($includes as $app => $include) {
     $eventDispatcher->addListener(
         'OCA\\'.$app.'::loadAdditionalScripts',
@@ -42,7 +43,6 @@ foreach ($includes as $app => $include) {
             \OCP\Util::addScript('files_gf_trackdownloads', 'vueexample');
             \OCP\Util::addScript('files_gf_trackdownloads', $include);
             \OCP\Util::addStyle('files_gf_trackdownloads', 'style');
-            //\OCP\Util::addStyle('files_gf_trackdownloads', 'bootstrap.min');
         }
     );
 }
