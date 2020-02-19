@@ -1,5 +1,4 @@
 const path = require('path')
-const { VueLoaderPlugin } = require('vue-loader')
 const BundleAnalyzerPlugin = require('@bundle-analyzer/webpack-plugin')
 
 const config = {

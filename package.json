@@ -1,26 +1,20 @@
 {
-  "name": "vueexample",
-  "description": "A simple Nextcloud app using vue-components",
-  "version": "4.0.0",
-  "author": "John Molakvoæ <skjnldsv@protonmail.com>",
-  "contributors": [
-    "John Molakvoæ <skjnldsv@protonmail.com>"
-  ],
+  "name": "files_gf_trackdownloads",
+  "description": "Nextcloud app for tracking downloads of files in group folders",
+  "version": "1.0.0",
+  "author": "Milos Petkovic <milos.petkovic@elb-solutions.com>",
   "keywords": [
     "nextcloud",
-    "vueexample",
-    "app",
-    "dev",
-    "vuejs"
+    "app"
   ],
   "bugs": {
-    "url": "https://github.com/skjnldsv/vueexample/issues"
+    "url": "https://github.com/milospetkovic/files_gf_trackdownloads/issues"
   },
   "repository": {
-    "url": "https://github.com/skjnldsv/vueexample",
+    "url": "https://github.com/milospetkovic/files_gf_trackdownloads",
     "type": "git"
   },
-  "homepage": "https://github.com/skjnldsv/vueexample",
+  "homepage": "https://github.com/milospetkovic/files_gf_trackdownloads",
   "license": "agpl",
   "private": true,
   "scripts": {
