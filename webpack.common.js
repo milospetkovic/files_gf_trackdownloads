@@ -5,7 +5,7 @@ const BundleAnalyzerPlugin = require('@bundle-analyzer/webpack-plugin')
 const config = {
 	entry: {
 		main:path.join(__dirname, 'src', 'main.js'),
-		test:path.join(__dirname, 'src', 'test.js')
+		unconfirmed_files:path.join(__dirname, 'src', 'unconfirmed_files.js')
 	},
 	output: {
 		path: path.resolve(__dirname, './js'),

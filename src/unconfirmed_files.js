@@ -13,7 +13,7 @@ const vm = new Vue({
 			if (!this.allSelected) {
 				const vueInstance = this
 				$('.table-unconfirmed-files .fileid').each(function(i, el) {
-					vueInstance.selectedFiles.push(el.val())
+					vueInstance.selectedFiles.push($(el).val())
 				})
 			}
 		},

@@ -25,11 +25,13 @@ use OCA\FilesGFTrackDownloads\Manager\ShareManager;
 use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
-use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
 
 class PageController extends Controller
 {
+    /**
+     * @var
+     */
 	private $userId;
 
     /**
