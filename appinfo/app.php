@@ -24,19 +24,24 @@ $application->register();
 
 $eventDispatcher = \OC::$server->getEventDispatcher();
 
-//\OCP\Util::addScript('files_gf_trackdownloads', 'main');
+\OCP\Util::addScript('files_gf_trackdownloads', 'build/main');
+
+$eventDispatcher->addListener(\OCP\AppFramework\Http\TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS, function() {
+    \OCP\Util::addScript('files_gf_trackdownloads', 'build/main');
+});
 
 $includes = [
     'Files' => 'files',
     'Files_Sharing' => 'files',
 ];
-
+//
 // pages where additional javascript/css should be inserted
 foreach ($includes as $app => $include) {
     $eventDispatcher->addListener(
         'OCA\\'.$app.'::loadAdditionalScripts',
-        function () {
-            \OCP\Util::addScript('files_gf_trackdownloads', 'vueexample');
+        function () use ($include) {
+            \OCP\Util::addScript('files_gf_trackdownloads', 'build/main');
+            \OCP\Util::addScript('files_gf_trackdownloads', $include);
             \OCP\Util::addStyle('files_gf_trackdownloads', 'style');
         }
     );
