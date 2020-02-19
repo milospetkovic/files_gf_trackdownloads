@@ -26,11 +26,7 @@
   "scripts": {
     "build": "NODE_ENV=production webpack --progress --hide-modules --config webpack.prod.js",
     "dev": "NODE_ENV=development webpack --progress --config webpack.dev.js",
-    "watch": "NODE_ENV=development webpack --progress --watch --config webpack.dev.js",
-    "lint": "eslint --ext .js,.vue src",
-    "lint:fix": "eslint --ext .js,.vue src --fix",
-    "stylelint": "stylelint src",
-    "stylelint:fix": "stylelint src --fix"
+    "watch": "NODE_ENV=development webpack --progress --watch --config webpack.dev.js"
   },
   "dependencies": {
     "@bundle-analyzer/webpack-plugin": "^0.5.1",
@@ -53,6 +49,7 @@
     "@vue/test-utils": "^1.0.0-beta.31",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.4.2",
     "eslint": "^5.16.0",
     "eslint-config-nextcloud": "0.1.1",

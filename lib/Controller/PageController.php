@@ -22,6 +22,7 @@
 namespace OCA\FilesGFTrackDownloads\Controller;
 
 use OCA\FilesGFTrackDownloads\Manager\ShareManager;
+use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Http\DataResponse;
@@ -57,7 +58,17 @@ class PageController extends Controller
 	 */
 	public function index()
     {
-		return new TemplateResponse('files_gf_trackdownloads', 'index', ['data' => $this->shareManager->getSharedFilesWithConfirmationDateNotConfirmed($this->userId)]);  // templates/index.php
+        $response = new TemplateResponse(
+            'files_gf_trackdownloads',
+            'index',
+            ['data' => $this->shareManager->getSharedFilesWithConfirmationDateNotConfirmed($this->userId)]
+        );
+
+        $policy = new ContentSecurityPolicy();
+        $policy->allowEvalScript(true);
+        $response->setContentSecurityPolicy($policy);
+
+		return $response;
 	}
 
 }
