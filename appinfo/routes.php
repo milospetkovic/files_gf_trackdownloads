@@ -10,6 +10,7 @@
 return [
     'routes' => [
         [ 'name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+        [ 'name' => 'page#your_confirmed_files', 'url' => 'your_confirmed_files', 'verb' => 'GET'],
         [ 'name' => 'action#confirm', 'url' => 'ajax/confirm.php', 'verb' => 'POST' ],
         [ 'name' => 'action#confirmSelectedSharedFiles', 'url' => 'ajax/confirmSelectedSharedFiles.php', 'verb' => 'POST' ]
     ]

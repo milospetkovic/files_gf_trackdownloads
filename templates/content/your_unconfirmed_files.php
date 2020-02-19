@@ -9,11 +9,11 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
             <div class="row">
                 <div class="col-xs-12">
 
-                    <h2><?php p($l->t('Your unconfirmed files')) ?></h2>
+                    <h2><?php p($l->t('Your confirmed files')) ?></h2>
 
                     <?php
                     if (count($_['data'])) {
-                    ?>
+                        ?>
                         <div class="actionButtons">
                             <button v-show="this.selectedFiles.length" @click="confirmSelectedFiles"><?php p($l->t('Confirm selected files')) ?></button>
                         </div>
@@ -24,15 +24,15 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover table-sm table-unconfirmed-files">
                                 <thead>
-                                    <tr>
-                                        <th>
-                                            <input type="checkbox" name="selunselall" @click="selectOrUnselectAll" v-model="allSelected" value="" />
-                                        </th>
-                                        <th><?php p($l->t('Shared by user')) ?></th>
-                                        <th><?php p($l->t('Shared date')) ?></th>
-                                        <th><?php p($l->t('Confirm until')) ?></th>
-                                        <th><?php p($l->t('File')) ?></th>
-                                    </tr>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="selunselall" @click="selectOrUnselectAll" v-model="allSelected" value="" />
+                                    </th>
+                                    <th><?php p($l->t('Shared by user')) ?></th>
+                                    <th><?php p($l->t('Shared date')) ?></th>
+                                    <th><?php p($l->t('Confirm until')) ?></th>
+                                    <th><?php p($l->t('File')) ?></th>
+                                </tr>
                                 </thead>
 
                                 <tbody>
@@ -55,9 +55,9 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
 
                     <?php } else { ?>
 
-                         <div class="text-warning">
+                        <div class="text-warning">
                             <?php p($l->t('No results')) ?>
-                         </div>
+                        </div>
 
                     <?php } ?>
 
