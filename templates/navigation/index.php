@@ -1,5 +1,5 @@
 <ul>
-	<li class="sprite"><a class="icon icon-checkmark-white" href="#"><?php p($l->t('Your unconfirmed files')) ?></a></li>
+	<li class="sprite"><a class="icon icon-fgft-confirmation" href="#"><?php p($l->t('Your unconfirmed files')) ?></a></li>
     <?php
     /*
 	<li>
