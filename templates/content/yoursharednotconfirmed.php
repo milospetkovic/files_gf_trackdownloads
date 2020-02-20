@@ -9,7 +9,7 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
             <div class="row">
                 <div class="col-xs-12">
 
-                    <h2><?php p($l->t('Shared with others and not confirmed')) ?></h2>
+                    <h2><?php p($l->t('Shared with others and unconfirmed')) ?></h2>
 
                     <?php
                     if (count($_['data'])) {

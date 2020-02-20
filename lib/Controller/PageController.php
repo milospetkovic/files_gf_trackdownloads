@@ -39,6 +39,14 @@ class PageController extends Controller
      */
     private $shareManager;
 
+    /**
+     * PageController constructor.
+     *
+     * @param $AppName
+     * @param IRequest $request
+     * @param $UserId
+     * @param ShareManager $shareManager
+     */
     public function __construct($AppName, IRequest $request, $UserId, ShareManager $shareManager)
     {
 		parent::__construct($AppName, $request);
@@ -63,8 +71,8 @@ class PageController extends Controller
         $response = new TemplateResponse(
             'files_gf_trackdownloads',
             'index',
-            ['data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateButNotConfirmed($this->userId)]
-        );
+            [   'data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateButNotConfirmed($this->userId),
+                'active_route' => $this->getCurrentPageRoute() ]);
 
         $policy = new ContentSecurityPolicy();
         $policy->allowEvalScript(true);
@@ -90,8 +98,8 @@ class PageController extends Controller
         $response = new TemplateResponse(
             'files_gf_trackdownloads',
             'yourconfirmedfiles',
-            ['data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateWhichAreConfirmed($this->userId)]
-        );
+            [   'data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateWhichAreConfirmed($this->userId),
+                'active_route' => $this->getCurrentPageRoute() ]);
 
         return $response;
     }
@@ -113,8 +121,8 @@ class PageController extends Controller
         $response = new TemplateResponse(
             'files_gf_trackdownloads',
             'yoursharednotconfirmed',
-            ['data' => $this->shareManager->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreNotConfirmed($this->userId)]
-        );
+            [   'data' => $this->shareManager->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreNotConfirmed($this->userId),
+                'active_route' => $this->getCurrentPageRoute() ]);
 
         return $response;
     }
@@ -136,10 +144,31 @@ class PageController extends Controller
         $response = new TemplateResponse(
             'files_gf_trackdownloads',
             'yoursharedandconfirmed',
-            ['data' => $this->shareManager->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreConfirmed($this->userId)]
-        );
+            [   'data' => $this->shareManager->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreConfirmed($this->userId),
+                'active_route' => $this->getCurrentPageRoute() ]);
 
         return $response;
+    }
+
+    /**
+     * Get app's full current route
+     *
+     * @return string
+     */
+    private function getCurrentRoute()
+    {
+        return $this->request->parameters['_route'];
+    }
+
+    /**
+     * Pull out app's current page route only
+     *
+     * @return string
+     */
+    private function getCurrentPageRoute()
+    {
+        $arr = explode('.', $this->getCurrentRoute());
+        return end($arr);
     }
 
 }

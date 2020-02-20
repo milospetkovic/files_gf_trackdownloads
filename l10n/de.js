@@ -39,7 +39,7 @@ OC.L10N.register(
 		"Your confirmed files": "Ihre bestätigten Dateien",
 		"Shared with you and unconfirmed": "Mit Ihnen geteilt und unbestätigt",
 		"Shared with you and confirmed": "Mit Ihnen geteilt und bestätigt",
-		"Shared with others and not confirmed": "Mit anderen geteilt und nicht bestätigt",
+		"Shared with others and unconfirmed": "Mit anderen geteilt und nicht bestätigt",
 		"Shared with others and confirmed": "Mit anderen geteilt und bestätigt"
     },
     ""
