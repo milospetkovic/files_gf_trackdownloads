@@ -174,6 +174,27 @@ class ShareManager
     }
 
     /**
+     * Get all files shared with other users which have defined expiration date and which are confirmed
+     *
+     * @param $userID
+     * @return mixed[]
+     */
+    public function getSharedFilesWithOtherUsersWithConfirmationDateWhichAreConfirmed($userID)
+    {
+        $query = $this->connection->getQueryBuilder();
+
+        $query->select('sh.id', 'sh.share_with', 'sh.file_source', 'sh.expiration',
+            'sh.elb_confirmed', 'sh.stime', 'sh.uid_initiator', 'sh.file_target', 'fc.fileid')
+            ->from('share', 'sh')
+            ->where($query->expr()->eq('sh.uid_initiator', $query->createNamedParameter($userID)))
+            ->andWhere($query->expr()->isNotNull('sh.expiration'))
+            ->andWhere($query->expr()->isNotNull('sh.elb_confirmed'))
+            ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'));
+
+        return $query->execute()->fetchAll();
+    }
+
+    /**
      * Get share record by share id
      *
      * @param $id
