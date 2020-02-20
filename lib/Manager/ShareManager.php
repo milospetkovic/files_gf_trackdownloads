@@ -22,12 +22,12 @@
 namespace OCA\FilesGFTrackDownloads\Manager;
 
 
+use DateTime;
 use Doctrine\DBAL\Driver\Statement;
-use OCP\AppFramework\Utility\ITimeFactory;
+use Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\IL10N;
-use OCP\Share\Exceptions\ShareNotFound;
 
 class ShareManager
 {
@@ -39,10 +39,6 @@ class ShareManager
      * @var IL10N
      */
     private $l;
-    /**
-     * @var ITimeFactory
-     */
-    private $timeFactory;
 
     /**
      * ShareManager constructor.
@@ -50,12 +46,10 @@ class ShareManager
      * @param IL10N $l
      */
     public function __construct(IDBConnection $connection,
-                                IL10N $l,
-                                ITimeFactory $timeFactory)
+                                IL10N $l)
     {
         $this->connection = $connection;
         $this->l = $l;
-        $this->timeFactory = $timeFactory;
     }
 
     /**
@@ -151,7 +145,7 @@ class ShareManager
             ->andWhere($query->expr()->isNotNull('sh.expiration'))
             ->andWhere($query->expr()->isNotNull('sh.elb_confirmed'))
             ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'))
-            ->leftJoin('sh', 'users', 'u', $query->expr()->eq('u.uid', 'sh.uid_initiator'));;
+            ->leftJoin('sh', 'users', 'u', $query->expr()->eq('u.uid', 'sh.uid_initiator'));
 
         return $query->execute()->fetchAll();
     }
@@ -207,7 +201,6 @@ class ShareManager
      *
      * @param $id
      * @return mixed
-     * @throws ShareNotFound
      */
     public function getRawShare($id)
     {
@@ -219,10 +212,6 @@ class ShareManager
         $cursor = $qb->execute();
         $data = $cursor->fetch();
         $cursor->closeCursor();
-
-        if ($data === false) {
-            //throw new ShareNotFound;
-        }
 
         return $data;
     }
@@ -259,13 +248,13 @@ class ShareManager
      *
      * @param $shareID
      * @return Statement|int
-     * @throws \Exception
+     * @throws Exception
      */
     public function markSharedFileIDAsConfirmed($shareID)
     {
         $query = $this->connection->getQueryBuilder();
 
-        $now = new \DateTime();
+        $now = new DateTime();
         $nowFormat = $now->format('Y-m-d H:i:s');
 
         $query->update('share')
@@ -280,7 +269,6 @@ class ShareManager
      * @param $userID
      * @param $fileID
      * @return mixed
-     * @throws ShareNotFound
      */
     public function getShareRecordForUserAndForFileID($userID, $fileID)
     {
@@ -294,13 +282,7 @@ class ShareManager
         $data = $cursor->fetch();
         $cursor->closeCursor();
 
-        if ($data === false) {
-            //throw new ShareNotFound;
-        }
-
         return $data;
     }
-
-
 
 }
