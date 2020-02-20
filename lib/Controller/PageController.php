@@ -85,17 +85,13 @@ class PageController extends Controller
      * @NoAdminRequired
      * @NoCSRFRequired
      */
-    public function your_confirmed_files()
+    public function yourconfirmedfiles()
     {
         $response = new TemplateResponse(
             'files_gf_trackdownloads',
-            'your_confirmed_files',
+            'yourconfirmedfiles',
             ['data' => $this->shareManager->getSharedFilesWithConfirmationDateNotConfirmed($this->userId)]
         );
-
-//        $policy = new ContentSecurityPolicy();
-//        $policy->allowEvalScript(true);
-//        $response->setContentSecurityPolicy($policy);
 
         return $response;
     }

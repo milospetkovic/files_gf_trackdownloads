@@ -11,7 +11,7 @@ style('files_gf_trackdownloads', 'bootstrap/bootstrap.edit');
 
     <div id="app-content">
         <div id="app-content-wrapper">
-            <?php print_unescaped($this->inc('content/your_unconfirmed_files.php')); ?>
+            <?php print_unescaped($this->inc('content/yourconfirmedfiles')); ?>
         </div>
     </div>
 </div>
