@@ -11,6 +11,8 @@ return [
     'routes' => [
         [ 'name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
         [ 'name' => 'page#yourconfirmedfiles', 'url' => '/yourconfirmedfiles', 'verb' => 'GET'],
+        [ 'name' => 'page#yoursharednotconfirmed', 'url' => '/yoursharednotconfirmed', 'verb' => 'GET'],
+        [ 'name' => 'page#yoursharedandconfirmed', 'url' => '/yoursharedandconfirmed', 'verb' => 'GET'],
         [ 'name' => 'action#confirm', 'url' => 'ajax/confirm.php', 'verb' => 'POST' ],
         [ 'name' => 'action#confirmSelectedSharedFiles', 'url' => 'ajax/confirmSelectedSharedFiles.php', 'verb' => 'POST' ]
     ]
