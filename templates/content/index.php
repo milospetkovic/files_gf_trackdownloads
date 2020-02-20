@@ -42,7 +42,13 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
                                             <?php // @TODO - replace name/class fileid with share id since logic has been changed ?>
                                             <input type="checkbox" name="fileid[]" class="fileid" v-model="selectedFiles" value="<?php echo $data['id'] ?>" />
                                         </td>
-                                        <td><?php echo $data['uid_initiator'] ?></td>
+                                        <td>
+                                        <?php if (!empty($data['displayname'])) {
+                                            echo $data['displayname'];
+                                        } else {
+                                            echo $data['uid_initiator'];
+                                        } ?>
+                                        </td>
                                         <td><?php echo DateTimeUtility::convertTimestampToUserFriendlyDateTime($data['stime']) ?></td>
                                         <td><?php echo DateTimeUtility::convertDateTimeToUserFriendlyDate($data['expiration']) ?></td>
                                         <td><?php print_unescaped(LinkToObjectUtility::returnLinkToTheFile($data['fileid'], ltrim($data['file_target'], '/'))) ?></td>

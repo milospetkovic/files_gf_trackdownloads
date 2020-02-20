@@ -30,7 +30,13 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
                                 <tbody>
                                 <?php foreach($_['data'] as $ind => $data) { ?>
                                     <tr>
-                                        <td><?php echo $data['share_with'] ?></td>
+                                        <td>
+                                            <?php if (!empty($data['displayname'])) {
+                                                echo $data['displayname'];
+                                            } else {
+                                                echo $data['share_with'];
+                                            } ?>
+                                        </td>
                                         <td><?php echo DateTimeUtility::convertTimestampToUserFriendlyDateTime($data['stime']) ?></td>
                                         <td><?php echo DateTimeUtility::convertDateTimeToUserFriendlyDate($data['expiration']) ?></td>
                                         <td><?php echo DateTimeUtility::convertDateTimeToUserFriendlyDateTime($data['elb_confirmed']) ?></td>
