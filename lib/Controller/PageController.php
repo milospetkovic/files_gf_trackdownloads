@@ -63,7 +63,7 @@ class PageController extends Controller
         $response = new TemplateResponse(
             'files_gf_trackdownloads',
             'index',
-            ['data' => $this->shareManager->getSharedFilesWithConfirmationDateNotConfirmed($this->userId)]
+            ['data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateButNotConfirmed($this->userId)]
         );
 
         $policy = new ContentSecurityPolicy();
@@ -90,7 +90,7 @@ class PageController extends Controller
         $response = new TemplateResponse(
             'files_gf_trackdownloads',
             'yourconfirmedfiles',
-            ['data' => $this->shareManager->getSharedFilesWithConfirmationDateNotConfirmed($this->userId)]
+            ['data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateWhichAreConfirmed($this->userId)]
         );
 
         return $response;

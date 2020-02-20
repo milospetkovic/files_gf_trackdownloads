@@ -34,7 +34,8 @@ OC.L10N.register(
         "Confirm selected files": "Bestätigen Sie die ausgewählten Dateien",
         "Are you sure you want to confirm selected files?": "Möchten Sie die ausgewählten Dateien wirklich bestätigen?",
         "Select at least one file for confirmation": "Bitte wählen Sie mindestens eine Datei zur Bestätigung aus",
-        "Shared file is not found or it is not shared with you": "Freigegebene Datei wurde nicht gefunden oder nicht für Sie freigegeben"
+        "Shared file is not found or it is not shared with you": "Freigegebene Datei wurde nicht gefunden oder nicht für Sie freigegeben",
+		"Your confirmed files": "Ihre bestätigten Dateien"
     },
     ""
 );
