@@ -22,7 +22,7 @@ use OCA\FilesGFTrackDownloads\Util\LinkToObjectUtility;
                                         <th><?php p($l->t('Shared by user')) ?></th>
                                         <th><?php p($l->t('Shared date')) ?></th>
                                         <th><?php p($l->t('Confirm until')) ?></th>
-                                        <th><?php p($l->t('Confirm date')) ?></th>
+                                        <th><?php p($l->t('Confirmation date')) ?></th>
                                         <th><?php p($l->t('File')) ?></th>
                                     </tr>
                                 </thead>

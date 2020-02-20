@@ -1,6 +1,8 @@
 <ul>
-	<li class="sprite"><a class="icon icon-fgft-confirmation" href="/apps/files_gf_trackdownloads/"><?php p($l->t('Your unconfirmed files')) ?></a></li>
-	<li class="sprite"><a class="icon icon-fgft-confirmation" href="/apps/files_gf_trackdownloads/yourconfirmedfiles"><?php p($l->t('Your confirmed files')) ?></a></li>
+	<li class="sprite"><a class="icon icon-fgft-confirmation" href="/apps/files_gf_trackdownloads/"><?php p($l->t('Shared with you and unconfirmed')) ?></a></li>
+	<li class="sprite"><a class="icon icon-fgft-confirmation" href="/apps/files_gf_trackdownloads/yourconfirmedfiles"><?php p($l->t('Shared with you and confirmed')) ?></a></li>
+	<li class="sprite"><a class="icon icon-fgft-confirmation" href="/apps/files_gf_trackdownloads/yoursharednotconfirmed"><?php p($l->t('Shared with others and not confirmed')) ?></a></li>
+	<li class="sprite"><a class="icon icon-fgft-confirmation" href="/apps/files_gf_trackdownloads/yoursharednotconfirmed"><?php p($l->t('Shared with others and confirmed')) ?></a></li>
     <?php
     /*
 	<li>
