@@ -31,7 +31,7 @@ test-coverage:
 
 # Cleaning
 clean:
-	rm -rf js/*
+	rm -rf js/build/*
 
 clean-dev:
 	rm -rf node_modules

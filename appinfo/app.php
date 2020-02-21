@@ -20,7 +20,6 @@
  */
 
 use OCA\FilesGFTrackDownloads\AppInfo\Application;
-use OCP\AppFramework\Http\TemplateResponse;
 use OCP\Util;
 
 $application = new Application();
@@ -28,24 +27,17 @@ $application->register();
 
 $eventDispatcher = OC::$server->getEventDispatcher();
 
-Util::addScript('files_gf_trackdownloads', 'build/main');
-
-$eventDispatcher->addListener(TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS, function() {
-    Util::addScript('files_gf_trackdownloads', 'build/main');
-});
-
 $includes = [
     'Files' => 'files',
     'Files_Sharing' => 'files',
 ];
-//
+
 // pages where additional javascript/css should be inserted
 foreach ($includes as $app => $include) {
     $eventDispatcher->addListener(
         'OCA\\'.$app.'::loadAdditionalScripts',
         function () use ($include) {
-            Util::addScript('files_gf_trackdownloads', 'build/main');
-            Util::addScript('files_gf_trackdownloads', $include);
+            Util::addScript('files_gf_trackdownloads', 'main');
             Util::addStyle('files_gf_trackdownloads', 'style');
         }
     );
