@@ -22,10 +22,9 @@
 namespace OCA\FilesGFTrackDownloads\Activity;
 
 use OC\Files\Filesystem;
+use OC\User\NoUserException;
 use OCA\FilesGFTrackDownloads\CurrentUser;
 use OCA\FilesGFTrackDownloads\Service\ActivityService;
-use OCA\GroupFolders\AppInfo\Application;
-use OCA\GroupFolders\Folder\FolderManager;
 use OCP\Activity\IManager;
 use OCP\Files\Folder;
 use OCP\Files\InvalidPathException;
@@ -102,6 +101,7 @@ class Listener
      * Method saves info about file download action to activity in case the downloaded file is placed in the Group Folder
      *
      * @param string $path Path of the file that has been read
+     * @throws NoUserException
      */
     public function readFile($path)
     {
@@ -133,7 +133,7 @@ class Listener
             }
 
             try {
-                list($filePath, $owner, $fileId, $isDir) = $this->getSourcePathAndOwner($path);
+                list($filePath, $fileId, $isDir) = $this->getSourcePathAndOwner($path);
             } catch (NotFoundException $e) {
                 return;
             } catch (InvalidPathException $e) {
@@ -183,7 +183,7 @@ class Listener
      * @return array
      * @throws InvalidPathException
      * @throws NotFoundException
-     * @throws \OC\User\NoUserException
+     * @throws NoUserException
      */
     protected function getSourcePathAndOwner($path)
     {
@@ -215,7 +215,6 @@ class Listener
 
         return [
             $path,
-            $owner,
             $node->getId(),
             $node instanceof Folder
         ];

@@ -21,6 +21,7 @@
 
 namespace OCA\FilesGFTrackDownloads\Activity;
 
+use InvalidArgumentException;
 use OCP\Activity\IEvent;
 use OCP\Activity\IEventMerger;
 use OCP\Activity\IManager;
@@ -94,13 +95,13 @@ class Provider implements IProvider
      * @param IEvent $event
      * @param IEvent|null $previousEvent
      * @return IEvent
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @since 11.0.0
      */
     public function parse($language, IEvent $event, IEvent $previousEvent = null)
     {
         if ($event->getApp() !== 'files_gf_trackdownloads') {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
 
         $this->l = $this->languageFactory->get('files_gf_trackdownloads', $language);
@@ -113,7 +114,7 @@ class Provider implements IProvider
         if ($this->activityManager->isFormattingFilteredObject()) {
             try {
                 return $this->parseShortVersion($event, $previousEvent);
-            } catch (\InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 // Ignore and simply use the long version...
             }
         }
@@ -125,7 +126,7 @@ class Provider implements IProvider
      * @param IEvent $event
      * @param IEvent $previousEvent
      * @return IEvent
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @since 11.0.0
      */
     public function parseShortVersion(IEvent $event, IEvent $previousEvent = null)
@@ -133,6 +134,7 @@ class Provider implements IProvider
         $parsedParameters = $this->getParsedParameters($event);
         $params = $event->getSubjectParameters();
 
+        $subject = '';
         if (in_array($event->getSubject(), [self::SUBJECT_SHARED_GF_FILE_DOWNLOADED, self::SUBJECT_SHARED_GF_FOLDER_DOWNLOADED])) {
             if ($params[2] === 'desktop') {
                 $subject = $this->l->t('Downloaded by {actor} (via desktop)');
@@ -165,7 +167,7 @@ class Provider implements IProvider
      * @param IEvent $event
      * @param IEvent $previousEvent
      * @return IEvent
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @since 11.0.0
      */
     public function parseLongVersion(IEvent $event, IEvent $previousEvent = null)
@@ -231,7 +233,7 @@ class Provider implements IProvider
      * @param IEvent $event
      * @param string $subject
      * @param array $parameters
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function setSubjects(IEvent $event, $subject, array $parameters)
     {
@@ -255,13 +257,8 @@ class Provider implements IProvider
 
         switch ($subject) {
             case self::SUBJECT_SHARED_GF_FOLDER_DOWNLOADED:
-            case self::SUBJECT_SHARED_GF_FILE_DOWNLOADED:
-                $id = key($parameters[0]);
-                return [
-                    'file' => $this->generateFileParameter($id, $parameters[0][$id]),
-                    'actor' => $this->generateUserParameter($parameters[1]),
-                ];
             case self::SUBJECT_GF_FILE_CONFIRMED:
+            case self::SUBJECT_SHARED_GF_FILE_DOWNLOADED:
                 $id = key($parameters[0]);
                 return [
                     'file' => $this->generateFileParameter($id, $parameters[0][$id]),

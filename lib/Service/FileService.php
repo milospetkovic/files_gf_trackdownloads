@@ -39,7 +39,7 @@ class FileService
 
     /**
      * FileService constructor.
-     * @param CurrentUser $UserId
+     * @param CurrentUser $currentUser
      * @param IL10N $l
      * @param FileCacheManager $fileCacheManager
      * @param ShareManager $shareManager

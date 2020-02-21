@@ -28,6 +28,7 @@ use OCA\Activity\Data;
 use OCA\FilesGFTrackDownloads\Activity\Setting;
 use OCA\FilesGFTrackDownloads\Manager\GroupFolderManager;
 use OCP\Activity\IManager;
+use OCP\Files\NotFoundException;
 use OCP\IDBConnection;
 use OCP\IGroupManager;
 use OCP\ILogger;
@@ -128,7 +129,7 @@ class ActivityService
      *
      * @param $fileID
      * @return bool
-     * @throws \OCP\Files\NotFoundException
+     * @throws NotFoundException
      */
     public function saveFileConfirmationToActivity($fileID)
     {

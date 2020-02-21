@@ -21,8 +21,10 @@
 
 namespace OCA\FilesGFTrackDownloads\AppInfo;
 
+use OC\User\NoUserException;
 use OCA\FilesGFTrackDownloads\Activity\Listener;
 use OCP\AppFramework\App;
+use OCP\AppFramework\QueryException;
 use OCP\Util;
 
 class Application extends App
@@ -48,8 +50,11 @@ class Application extends App
      * Listener when user downloads a file
      *
      * @param array $params
+     * @throws QueryException
+     * @throws NoUserException
      */
-    public function listenReadFileInGroupFolder($params) {
+    public function listenReadFileInGroupFolder($params)
+    {
         /** @var Listener $hooks */
         $hooks = $this->getContainer()->query(Listener::class);
         $hooks->readFile($params['path']);

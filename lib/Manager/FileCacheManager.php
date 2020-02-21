@@ -21,7 +21,6 @@
 
 namespace OCA\FilesGFTrackDownloads\Manager;
 
-use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class FileCacheManager

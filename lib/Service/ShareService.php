@@ -25,12 +25,9 @@ namespace OCA\FilesGFTrackDownloads\Service;
 use OCA\Activity\CurrentUser;
 use OCA\FilesGFTrackDownloads\Manager\FileCacheManager;
 use OCA\FilesGFTrackDownloads\Manager\ShareManager;
-use OCP\AppFramework\Utility\ITimeFactory;
-use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\Files\NotFoundException;
 use OCP\IDBConnection;
 use OCP\IL10N;
-use OCP\Share\Exceptions\ShareNotFound;
 
 class ShareService
 {
@@ -87,8 +84,10 @@ class ShareService
      * Mark shared file as confirmed and save info about confirmation to the activity stream
      *
      * @param $shareID
-     * @return false|string
+     * @param bool $jsonResponse
+     * @return array (option for json format)
      * @throws NotFoundException
+     * @throws \Exception
      */
     public function confirm($shareID, $jsonResponse=true)
     {
@@ -107,6 +106,10 @@ class ShareService
         if (!$error) {
             // get file id from shared record
             $fileID = $getShareRecord['file_source'];
+            if (!($fileID > 0)) {
+                $error++;
+                $error_msg = $this->l->t('File id has not been found');
+            }
         }
 
         // check up if shared file is already confirmed
@@ -195,7 +198,6 @@ class ShareService
      * @param $fileID
      * @return bool|false|string
      * @throws NotFoundException
-     * @throws ShareNotFound
      */
     public function confirmSharedFileByFileID($fileID)
     {

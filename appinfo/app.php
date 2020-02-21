@@ -19,15 +19,19 @@
  *
  */
 
-$application = new \OCA\FilesGFTrackDownloads\AppInfo\Application();
+use OCA\FilesGFTrackDownloads\AppInfo\Application;
+use OCP\AppFramework\Http\TemplateResponse;
+use OCP\Util;
+
+$application = new Application();
 $application->register();
 
-$eventDispatcher = \OC::$server->getEventDispatcher();
+$eventDispatcher = OC::$server->getEventDispatcher();
 
-\OCP\Util::addScript('files_gf_trackdownloads', 'build/main');
+Util::addScript('files_gf_trackdownloads', 'build/main');
 
-$eventDispatcher->addListener(\OCP\AppFramework\Http\TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS, function() {
-    \OCP\Util::addScript('files_gf_trackdownloads', 'build/main');
+$eventDispatcher->addListener(TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS, function() {
+    Util::addScript('files_gf_trackdownloads', 'build/main');
 });
 
 $includes = [
@@ -40,9 +44,9 @@ foreach ($includes as $app => $include) {
     $eventDispatcher->addListener(
         'OCA\\'.$app.'::loadAdditionalScripts',
         function () use ($include) {
-            \OCP\Util::addScript('files_gf_trackdownloads', 'build/main');
-            \OCP\Util::addScript('files_gf_trackdownloads', $include);
-            \OCP\Util::addStyle('files_gf_trackdownloads', 'style');
+            Util::addScript('files_gf_trackdownloads', 'build/main');
+            Util::addScript('files_gf_trackdownloads', $include);
+            Util::addStyle('files_gf_trackdownloads', 'style');
         }
     );
 }

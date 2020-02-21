@@ -21,12 +21,13 @@
 
 namespace OCA\FilesGFTrackDownloads\Controller;
 
-use OCA\FilesGFTrackDownloads\Service\FileService;
 use OCA\FilesGFTrackDownloads\Service\ShareService;
+use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
+use OCP\Share\Exceptions\ShareNotFound;
 
 class ActionController extends Controller
 {
@@ -35,14 +36,19 @@ class ActionController extends Controller
     private $l;
 
     /**
-     * @var FileService
-     */
-    private $fileService;
-    /**
      * @var ShareService
      */
     private $shareService;
 
+    /**
+     * ActionController constructor.
+     * @param IConfig $config
+     * @param $AppName
+     * @param IRequest $request
+     * @param string $UserId
+     * @param IL10N $l
+     * @param ShareService $shareService
+     */
     public function __construct(IConfig $config,
                                 $AppName,
                                 IRequest $request,
@@ -63,6 +69,8 @@ class ActionController extends Controller
      *
      * @param $fileID
      * @return false|string
+     * @throws NotFoundException
+     * @throws ShareNotFound
      */
     public function confirm($fileID)
     {
@@ -75,6 +83,7 @@ class ActionController extends Controller
      *
      * @param $files
      * @return false|string
+     * @throws NotFoundException
      */
     public function confirmSelectedSharedFiles($files)
     {
