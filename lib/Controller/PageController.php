@@ -72,7 +72,8 @@ class PageController extends Controller
             'files_gf_trackdownloads',
             'index',
             [   'data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateButNotConfirmed($this->userId),
-                'active_route' => $this->getCurrentPageRoute() ]);
+                'active_route' => $this->getCurrentPageRoute(),
+                'count_files' => $this->shareManager->getCountOfFilesForUserPerShareTypeAndConfirmationStatus($this->userId) ]);
 
         $policy = new ContentSecurityPolicy();
         $policy->allowEvalScript(true);
@@ -99,7 +100,8 @@ class PageController extends Controller
             'files_gf_trackdownloads',
             'yourconfirmedfiles',
             [   'data' => $this->shareManager->getSharedFilesWithUserWithConfirmationDateWhichAreConfirmed($this->userId),
-                'active_route' => $this->getCurrentPageRoute() ]);
+                'active_route' => $this->getCurrentPageRoute(),
+                'count_files' => $this->shareManager->getCountOfFilesForUserPerShareTypeAndConfirmationStatus($this->userId) ]);
 
         return $response;
     }
@@ -122,7 +124,8 @@ class PageController extends Controller
             'files_gf_trackdownloads',
             'yoursharednotconfirmed',
             [   'data' => $this->shareManager->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreNotConfirmed($this->userId),
-                'active_route' => $this->getCurrentPageRoute() ]);
+                'active_route' => $this->getCurrentPageRoute(),
+                'count_files' => $this->shareManager->getCountOfFilesForUserPerShareTypeAndConfirmationStatus($this->userId) ]);
 
         return $response;
     }
@@ -145,7 +148,8 @@ class PageController extends Controller
             'files_gf_trackdownloads',
             'yoursharedandconfirmed',
             [   'data' => $this->shareManager->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreConfirmed($this->userId),
-                'active_route' => $this->getCurrentPageRoute() ]);
+                'active_route' => $this->getCurrentPageRoute(),
+                'count_files' => $this->shareManager->getCountOfFilesForUserPerShareTypeAndConfirmationStatus($this->userId) ]);
 
         return $response;
     }

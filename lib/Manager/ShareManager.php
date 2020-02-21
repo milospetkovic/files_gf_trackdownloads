@@ -285,4 +285,21 @@ class ShareManager
         return $data;
     }
 
+    /**
+     * Method counts files for user by share type (shared with the user or user shared with others)
+     * and by confirmation status of shared files
+     *
+     * @param $userID
+     * @return array
+     */
+    public function getCountOfFilesForUserPerShareTypeAndConfirmationStatus($userID)
+    {
+        return [
+            'index' => count($this->getSharedFilesWithUserWithConfirmationDateButNotConfirmed($userID)),
+            'yourconfirmedfiles' => count($this->getSharedFilesWithUserWithConfirmationDateWhichAreConfirmed($userID)),
+            'yoursharednotconfirmed' => count($this->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreNotConfirmed($userID)),
+            'yoursharedandconfirmed' => count($this->getSharedFilesWithOtherUsersWithConfirmationDateWhichAreConfirmed($userID))
+        ];
+    }
+
 }
