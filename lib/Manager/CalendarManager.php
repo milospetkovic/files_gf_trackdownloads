@@ -53,16 +53,26 @@ class CalendarManager
     private $l;
 
     /**
+     * @var UserGroupManager
+     */
+    private $userGroupManager;
+
+    /**
      * CalendarManager constructor.
      * @param CalDavBackend $calDavBackend
      * @param IL10N $l
      * @param IDBConnection $connection
+     * @param UserGroupManager $userGroupManager
      */
-    public function __construct(CalDavBackend $calDavBackend, IL10N $l, IDBConnection $connection)
+    public function __construct(CalDavBackend $calDavBackend,
+                                IL10N $l,
+                                IDBConnection $connection,
+                                UserGroupManager $userGroupManager)
     {
         $this->calDavBackend = $calDavBackend;
         $this->l = $l;
         $this->connection = $connection;
+        $this->userGroupManager = $userGroupManager;
     }
 
     /**
@@ -112,7 +122,7 @@ class CalendarManager
     public function getSharedFilesWithExpDateWithoutLinkedCalendarEventWhichAreNotConfirmed()
     {
         $stmt = $this->connection->prepare(
-            'SELECT `sh`.`id`, `sh`.`share_with`, `sh`.`expiration`, `sh`.`file_target`, `sh`.`uid_initiator`
+            'SELECT `sh`.`id`, `sh`.`share_type`, `sh`.`share_with`, `sh`.`expiration`, `sh`.`file_target`, `sh`.`uid_initiator`
                  FROM `*PREFIX*share` as sh
                  LEFT JOIN `*PREFIX*filecache` as fc on `fc`.`fileid`=`sh`.`file_source` 
                  WHERE `sh`.`elb_calendar_object_id` is null 
@@ -124,7 +134,17 @@ class CalendarManager
         // place all fetched data into the array
         $shareRows = [];
         while ($row = $stmt->fetch()) {
-            $shareRows[] = $row;
+            if ($row['share_type'] == 0) { // shared for user
+                $shareRows[] = $row;
+            } elseif($row['share_type'] == 1) { // shared for user group
+                $getUsersInUserGroup = $this->userGroupManager->getUsersIDsPlacedInUserGroupID($row['share_with']);
+                if (is_array($getUsersInUserGroup) && count($getUsersInUserGroup)) {
+                    foreach($getUsersInUserGroup as $resInd => $userID) {
+                        $row['share_with'] = $getUsersInUserGroup[$resInd]['uid'];
+                        $shareRows[] = $row;
+                    }
+                }
+            }
         }
         $stmt->closeCursor();
 
