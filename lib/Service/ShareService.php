@@ -210,4 +210,9 @@ class ShareService
             'error_msg' => $this->l->t('Shared file is not found or it is not shared with you')]);
     }
 
+    public function createSharesForUsersInUserGroup()
+    {
+
+    }
+
 }
