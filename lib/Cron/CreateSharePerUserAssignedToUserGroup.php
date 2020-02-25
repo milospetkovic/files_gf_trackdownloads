@@ -15,8 +15,8 @@ class CreateSharePerUserAssignedToUserGroup extends TimedJob
     public function __construct(ShareService $shareService)
     {
         $this->setInterval(-43200);
-        $this->lastRun = 0;
         $this->shareService = $shareService;
+        $this->lastRun = 0;
     }
 
     /**

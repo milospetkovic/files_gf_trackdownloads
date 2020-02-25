@@ -305,7 +305,7 @@ class ShareManager
     public function getSharePerUserGroupWithoutLinkedShareForUsers()
     {
         $stmt = $this->connection->prepare(
-            'SELECT `sh`.`id`
+            'SELECT `sh`.`id`, `sh`.`share_with`
                  FROM `*PREFIX*share` as sh
                  WHERE `sh`.`share_type` = 1
                  AND `sh`.`expiration` IS NOT NULL 

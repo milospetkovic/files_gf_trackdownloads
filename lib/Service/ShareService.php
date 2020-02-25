@@ -23,11 +23,15 @@ namespace OCA\FilesGFTrackDownloads\Service;
 
 
 use OCA\Activity\CurrentUser;
+use OCA\FederatedFileSharing\FederatedShareProvider;
+use OCA\FilesGFTrackDownloads\Manager\ElbCommonManager;
 use OCA\FilesGFTrackDownloads\Manager\FileCacheManager;
 use OCA\FilesGFTrackDownloads\Manager\ShareManager;
+use OCA\FilesGFTrackDownloads\Manager\UserGroupManager;
 use OCP\Files\NotFoundException;
 use OCP\IDBConnection;
 use OCP\IL10N;
+use OCP\Share\IShare as ShareTypeConstants;
 
 class ShareService
 {
@@ -55,6 +59,18 @@ class ShareService
      * @var IDBConnection
      */
     private $connection;
+    /**
+     * @var UserGroupManager
+     */
+    private $userGroupManager;
+    /**
+     * @var FederatedShareProvider
+     */
+    private $federatedShareProvider;
+    /**
+     * @var ElbCommonManager
+     */
+    private $elbCommonManager;
 
     /**
      * ShareService constructor.
@@ -64,13 +80,19 @@ class ShareService
      * @param ShareManager $shareManager
      * @param ActivityService $activityService
      * @param IDBConnection $connection
+     * @param UserGroupManager $userGroupManager
+     * @param FederatedShareProvider $federatedShareProvider
+     * @param ElbCommonManager $elbCommonManager
      */
     public function __construct(CurrentUser $currentUser,
                                 IL10N $l,
                                 FileCacheManager $fileCacheManager,
                                 ShareManager $shareManager,
                                 ActivityService $activityService,
-                                IDBConnection $connection)
+                                IDBConnection $connection,
+                                UserGroupManager $userGroupManager,
+                                FederatedShareProvider $federatedShareProvider,
+                                ElbCommonManager $elbCommonManager)
     {
         $this->currentUser = $currentUser;
         $this->l = $l;
@@ -78,6 +100,9 @@ class ShareService
         $this->shareManager = $shareManager;
         $this->activityService = $activityService;
         $this->connection = $connection;
+        $this->userGroupManager = $userGroupManager;
+        $this->federatedShareProvider = $federatedShareProvider;
+        $this->elbCommonManager = $elbCommonManager;
     }
 
     /**
@@ -213,6 +238,31 @@ class ShareService
     public function createSharesForUsersInUserGroup()
     {
         $shareForUserGroup = $this->shareManager->getSharePerUserGroupWithoutLinkedShareForUsers();
+        if (is_array($shareForUserGroup) && count($shareForUserGroup)) {
+            foreach ($shareForUserGroup as $ind => $data) {
+                $shareID = $data['id'];
+                $userGroupID = $data['share_with'];
+                $getUsersInUserGroup = $this->userGroupManager->getUsersIDsPlacedInUserGroupID($userGroupID);
+                if (is_array($getUsersInUserGroup) && count($getUsersInUserGroup)) {
+                    foreach ($getUsersInUserGroup as $arr) {
+                        $userID = $arr['uid'];
+                        $getShare = $this->shareManager->getRawShare($shareID);
+                        unset($getShare['id']);
+                        $getShare['share_type'] = ShareTypeConstants::TYPE_USER;
+                        $getShare['share_with'] = $userID;
+                        $getShare['elb_share_for_user_group'] = $shareID;
+
+                        $createShareRecordForUser = $this->elbCommonManager->insert('oc_share', $getShare);
+
+                        $test1 = 'test1';
+                        $test2 = 'test2';
+
+                        //$res = $this->federatedShareProvider->createShareObject($arr);
+
+                    }
+                }
+            }
+        }
         var_dump($shareForUserGroup);
         die('ok ovde prekini!');
     }
