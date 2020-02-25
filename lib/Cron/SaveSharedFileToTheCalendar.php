@@ -39,7 +39,7 @@ class SaveSharedFileToTheCalendar extends TimedJob
      */
     public function __construct(CalendarManager $calendarManager)
     {
-        $this->setInterval(-43200); // sets the correct interval for this timed job
+        $this->setInterval(0); // sets the correct interval for this timed job
         $this->calendarManager = $calendarManager;
         $this->lastRun = 0;
     }

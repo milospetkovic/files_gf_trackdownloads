@@ -10,13 +10,20 @@ use OCA\FilesGFTrackDownloads\Service\ShareService;
 
 class CreateSharePerUserAssignedToUserGroup extends TimedJob
 {
+    /**
+     * @var ShareService
+     */
     private $shareService;
 
+    /**
+     * CreateSharePerUserAssignedToUserGroup constructor.
+     * @param ShareService $shareService
+     */
     public function __construct(ShareService $shareService)
     {
         $this->setInterval(0);
         $this->shareService = $shareService;
-        $this->lastRun = -43200;
+        $this->lastRun = 0;
     }
 
     /**
