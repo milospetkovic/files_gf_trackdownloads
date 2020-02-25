@@ -28,6 +28,7 @@ use Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\IL10N;
+use OCP\Share\IShare as ShareTypeConstants;
 
 class ShareManager
 {
@@ -307,7 +308,7 @@ class ShareManager
         $stmt = $this->connection->prepare(
             'SELECT `sh`.`id`, `sh`.`share_with`
                  FROM `*PREFIX*share` as sh
-                 WHERE `sh`.`share_type` = 1
+                 WHERE `sh`.`share_type` = '.ShareTypeConstants::TYPE_GROUP.'
                  AND `sh`.`expiration` IS NOT NULL 
                  AND NOT EXISTS (SELECT 1 FROM `*PREFIX*share` as sh2 where `sh2`.`elb_share_for_user_group`=`sh`.`id`)' );
 

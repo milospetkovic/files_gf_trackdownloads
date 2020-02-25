@@ -14,9 +14,9 @@ class CreateSharePerUserAssignedToUserGroup extends TimedJob
 
     public function __construct(ShareService $shareService)
     {
-        $this->setInterval(-43200);
+        $this->setInterval(0);
         $this->shareService = $shareService;
-        $this->lastRun = 0;
+        $this->lastRun = -43200;
     }
 
     /**
@@ -27,8 +27,6 @@ class CreateSharePerUserAssignedToUserGroup extends TimedJob
     public function run($argument)
     {
         $this->shareService->createSharesForUsersInUserGroup();
-
-        die('stop cron job');
     }
 
 }

@@ -235,6 +235,9 @@ class ShareService
             'error_msg' => $this->l->t('Shared file is not found or it is not shared with you')]);
     }
 
+    /**
+     *
+     */
     public function createSharesForUsersInUserGroup()
     {
         $shareForUserGroup = $this->shareManager->getSharePerUserGroupWithoutLinkedShareForUsers();
@@ -251,20 +254,11 @@ class ShareService
                         $getShare['share_type'] = ShareTypeConstants::TYPE_USER;
                         $getShare['share_with'] = $userID;
                         $getShare['elb_share_for_user_group'] = $shareID;
-
                         $createShareRecordForUser = $this->elbCommonManager->insert('oc_share', $getShare);
-
-                        $test1 = 'test1';
-                        $test2 = 'test2';
-
-                        //$res = $this->federatedShareProvider->createShareObject($arr);
-
                     }
                 }
             }
         }
-        var_dump($shareForUserGroup);
-        die('ok ovde prekini!');
     }
 
 }
