@@ -71,7 +71,8 @@ class ShareManager
 
             $query->select('sh.id', 'sh.share_with', 'sh.file_source', 'sh.expiration')
                 ->from('share', 'sh')
-                ->where($query->expr()->eq('file_source', $query->createNamedParameter($fileID)));
+                ->where($query->expr()->eq('file_source', $query->createNamedParameter($fileID)))
+                ->andWhere($query->expr()->eq('share_type', $query->createNamedParameter(ShareTypeConstants::TYPE_USER)));
 
             $fetchRes = $query->execute()->fetchAll();
 
@@ -120,6 +121,7 @@ class ShareManager
             'u.displayname')
             ->from('share', 'sh')
             ->where($query->expr()->eq('sh.share_with', $query->createNamedParameter($userID)))
+            ->andWhere($query->expr()->eq('sh.share_type', $query->createNamedParameter(ShareTypeConstants::TYPE_USER)))
             ->andWhere($query->expr()->isNotNull('sh.expiration'))
             ->andWhere($query->expr()->isNull('sh.elb_confirmed'))
             ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'))
@@ -143,6 +145,7 @@ class ShareManager
             'u.displayname')
             ->from('share', 'sh')
             ->where($query->expr()->eq('sh.share_with', $query->createNamedParameter($userID)))
+            ->andWhere($query->expr()->eq('sh.share_type', $query->createNamedParameter(ShareTypeConstants::TYPE_USER)))
             ->andWhere($query->expr()->isNotNull('sh.expiration'))
             ->andWhere($query->expr()->isNotNull('sh.elb_confirmed'))
             ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'))
@@ -166,6 +169,7 @@ class ShareManager
             'u.displayname')
             ->from('share', 'sh')
             ->where($query->expr()->eq('sh.uid_initiator', $query->createNamedParameter($userID)))
+            ->andWhere($query->expr()->eq('sh.share_type', $query->createNamedParameter(ShareTypeConstants::TYPE_USER)))
             ->andWhere($query->expr()->isNotNull('sh.expiration'))
             ->andWhere($query->expr()->isNull('sh.elb_confirmed'))
             ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'))
@@ -189,6 +193,7 @@ class ShareManager
             'u.displayname')
             ->from('share', 'sh')
             ->where($query->expr()->eq('sh.uid_initiator', $query->createNamedParameter($userID)))
+            ->andWhere($query->expr()->eq('sh.share_type', $query->createNamedParameter(ShareTypeConstants::TYPE_USER)))
             ->andWhere($query->expr()->isNotNull('sh.expiration'))
             ->andWhere($query->expr()->isNotNull('sh.elb_confirmed'))
             ->leftJoin('sh', 'filecache', 'fc', $query->expr()->eq('fc.fileid', 'sh.file_source'))
@@ -303,6 +308,12 @@ class ShareManager
         ];
     }
 
+    /**
+     * Get shares with expiration date which are assigned to user group
+     * and which don't have created shares per user from the user group for the share
+     *
+     * @return array
+     */
     public function getSharePerUserGroupWithoutLinkedShareForUsers()
     {
         $stmt = $this->connection->prepare(

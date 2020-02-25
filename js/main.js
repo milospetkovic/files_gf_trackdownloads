@@ -1,7 +1,5 @@
 /**
- * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
- *
- * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @copyright Copyright (c) 2020 Milos Petkovic <milos.petkovic@elb-solutions.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -30,19 +28,9 @@
 
 	OCA.FilesGFTrackDownloads.MarkAsConfirmed = function (filename, context) {
 
-		// console.log('ime fajla koji pozivam:', fileName);
-		console.log('context koji pozivam:', context);
-		//console.log('get id od fajla: ', context.fileInfoModel.id);
-
 		var fileID = context.fileInfoModel.id;
 
-		//var dir = context.dir || context.fileList.getCurrentDirectory();
-		//var isDir = context.$file.attr('data-type') === 'dir';
-		//var url = context.fileList.getDownloadUrl(fileName, dir, isDir);
-		//console.log(dir, isDir);
-
 		var data = {
-			//nameOfFile: filename,
 			fileID: fileID
 		};
 
