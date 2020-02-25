@@ -27,6 +27,8 @@ class CreateSharePerUserAssignedToUserGroup extends TimedJob
     public function run($argument)
     {
         $this->shareService->createSharesForUsersInUserGroup();
+
+        die('stop cron job');
     }
 
 }

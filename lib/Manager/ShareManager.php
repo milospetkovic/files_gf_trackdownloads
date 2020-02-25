@@ -302,4 +302,25 @@ class ShareManager
         ];
     }
 
+    public function getSharePerUserGroupWithoutLinkedShareForUsers()
+    {
+        $stmt = $this->connection->prepare(
+            'SELECT `sh`.`id`
+                 FROM `*PREFIX*share` as sh
+                 WHERE `sh`.`share_type` = 1
+                 AND `sh`.`expiration` IS NOT NULL 
+                 AND NOT EXISTS (SELECT 1 FROM `*PREFIX*share` as sh2 where `sh2`.`elb_share_for_user_group`=`sh`.`id`)' );
+
+        $stmt->execute();
+
+        $shareRows = [];
+        while ($row = $stmt->fetch()) {
+            $shareRows[] = $row;
+        }
+
+        $stmt->closeCursor();
+
+        return $shareRows;
+    }
+
 }

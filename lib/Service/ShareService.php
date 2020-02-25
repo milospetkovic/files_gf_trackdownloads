@@ -212,7 +212,9 @@ class ShareService
 
     public function createSharesForUsersInUserGroup()
     {
-
+        $shareForUserGroup = $this->shareManager->getSharePerUserGroupWithoutLinkedShareForUsers();
+        var_dump($shareForUserGroup);
+        die('ok ovde prekini!');
     }
 
 }
