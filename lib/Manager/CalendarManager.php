@@ -43,7 +43,7 @@ class CalendarManager
     private $calendarDisplayName = 'Shared files with expiration date';
 
     /**
-     * @var \OCP\IDBConnection
+     * @var IDBConnection
      */
     private $connection;
 
@@ -257,7 +257,7 @@ EOD;
             // the start date time of calendar event
             $lastEventDateTime = date('Y-m-d 09:i:s', strtotime($shareData['expiration']));
 
-            $startDateTimeOfEvent = $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($lastEventDateTime));;
+            $startDateTimeOfEvent = $endDateTimeOfEvent = date('Ymd\THis\Z', strtotime($lastEventDateTime));
 
             // populate end calendar event with data
             $calData[1] = <<<EOD

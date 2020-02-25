@@ -294,6 +294,9 @@ class ActivityService
         }
     }
 
+    /**
+     * Unset property activitySavedForUserID
+     */
     private function resetActivitySavedForUserID()
     {
         $this->activitySavedForUserID = [];

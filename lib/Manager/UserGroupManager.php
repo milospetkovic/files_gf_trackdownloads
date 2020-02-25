@@ -26,17 +26,26 @@ use OCP\IDBConnection;
 
 class UserGroupManager
 {
-
     /**
      * @var IDBConnection
      */
     private $connection;
 
+    /**
+     * UserGroupManager constructor.
+     * @param IDBConnection $connection
+     */
     public function __construct(IDBConnection $connection)
     {
         $this->connection = $connection;
     }
 
+    /**
+     * Return array with user ids placed in user group id
+     *
+     * @param $userGroupID
+     * @return mixed[]
+     */
     public function getUsersIDsPlacedInUserGroupID($userGroupID)
     {
         $query = $this->connection->getQueryBuilder();

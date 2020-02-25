@@ -110,7 +110,7 @@ class ShareService
      *
      * @param $shareID
      * @param bool $jsonResponse
-     * @return array (option for json format)
+     * @return array|string (option for json format)
      * @throws NotFoundException
      * @throws \Exception
      */
@@ -236,25 +236,29 @@ class ShareService
     }
 
     /**
-     *
+     * Create share for each user placed in user group when share is assigned to the user group
      */
     public function createSharesForUsersInUserGroup()
     {
+        // check up if share for user group exists
         $shareForUserGroup = $this->shareManager->getSharePerUserGroupWithoutLinkedShareForUsers();
         if (is_array($shareForUserGroup) && count($shareForUserGroup)) {
             foreach ($shareForUserGroup as $ind => $data) {
                 $shareID = $data['id'];
                 $userGroupID = $data['share_with'];
+                // get user's ids in the user group
                 $getUsersInUserGroup = $this->userGroupManager->getUsersIDsPlacedInUserGroupID($userGroupID);
                 if (is_array($getUsersInUserGroup) && count($getUsersInUserGroup)) {
                     foreach ($getUsersInUserGroup as $arr) {
                         $userID = $arr['uid'];
+                        // get share record
                         $getShare = $this->shareManager->getRawShare($shareID);
                         unset($getShare['id']);
                         $getShare['share_type'] = ShareTypeConstants::TYPE_USER;
                         $getShare['share_with'] = $userID;
                         $getShare['elb_share_for_user_group'] = $shareID;
-                        $createShareRecordForUser = $this->elbCommonManager->insert('oc_share', $getShare);
+                        // create share record for a user in the user group id
+                        $this->elbCommonManager->insert('oc_share', $getShare);
                     }
                 }
             }

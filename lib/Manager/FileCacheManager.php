@@ -25,7 +25,6 @@ use OCP\IDBConnection;
 
 class FileCacheManager
 {
-
     /**
      * @var IDBConnection
      */
@@ -39,7 +38,5 @@ class FileCacheManager
     {
         $this->connection = $connection;
     }
-
-
 
 }
