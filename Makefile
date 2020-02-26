@@ -1,4 +1,4 @@
-all: dev-setup build-js-production test
+all: dev-setup build-js-production
 
 # Dev env management
 dev-setup: clean clean-dev npm-init
