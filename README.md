@@ -1,4 +1,4 @@
-# Files In Group Folder Track Downloads
+# Track downloads of files in group folders
 Place this app in **nextcloud/apps/**
 
 ## Building the app
